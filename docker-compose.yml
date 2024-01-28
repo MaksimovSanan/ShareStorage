@@ -1,0 +1,92 @@
+version: '3.1'
+
+services:
+  eureka-server:
+    build:
+      context: EurekaServer
+      dockerfile: Dockerfile.EurekaServer
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - my_network
+
+  users_service_postgresql:
+    build:
+      context: UsersService/UsersServicePostgreSQL
+      dockerfile: Dockerfile.UsersServicePostgreSQL
+    container_name: users_service_postgresql_container
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  users_service:
+    build:
+      context: UsersService
+      dockerfile: Dockerfile.UsersService
+    container_name: users_service_container
+#    ports:
+#      - "8095:8095"
+    links:
+      - eureka-server
+    networks:
+      - my_network
+
+
+  items_service_postgresql:
+    build:
+      context: ItemsService/ItemsServicePostgreSQL
+      dockerfile: Dockerfile.ItemsServicePostgreSQL
+    container_name: items_service_postgresql_container
+    ports:
+      - "5433:5432"  # Используйте 5433:5432, чтобы экспортировать порт 5432 контейнера
+    networks:
+      - my_network
+
+  items_service:
+      build:
+        context: ItemsService
+        dockerfile: Dockerfile.ItemsService
+      container_name: items_service_container
+#      ports:
+#        - "8096:8096"
+      links:
+        - eureka-server
+      networks:
+        - my_network
+
+  web_client:
+    build:
+      context: WebClient
+      dockerfile: Dockerfile.WebClient
+    container_name: web_client
+    links:
+      - eureka-server
+    networks:
+      - my_network
+
+  api_gateway:
+    build:
+      context: APIGateway
+      dockerfile: Dockerfile.APIGateway
+    container_name: api_gateway
+    ports:
+      - "8080:8080"
+    links:
+      - eureka-server
+    networks:
+      - my_network
+
+  authorization-server:
+    build:
+      context: authorization-server/AuthorizationServicePostgreSQL
+      dockerfile: Dockerfile.AuthorizationServerPostgreSQL
+    container_name: authorization_server_db
+    ports:
+      - "5434:5432"  # Используйте 5434:5432, чтобы экспортировать порт 5432 контейнера
+    networks:
+      - my_network
+
+networks:
+  my_network:

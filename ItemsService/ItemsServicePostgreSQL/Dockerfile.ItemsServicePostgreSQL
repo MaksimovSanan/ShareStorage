@@ -1,0 +1,14 @@
+# Официальный образ PostgreSQL
+FROM postgres:latest
+
+# Установка переменных окружения для базы данных
+ENV POSTGRES_DB=items_service_db
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+
+# Копирование файла схемы и данных в контейнер
+COPY init.sql /docker-entrypoint-initdb.d/
+
+
+# Открытие порта, на котором PostgreSQL работает
+EXPOSE 5432

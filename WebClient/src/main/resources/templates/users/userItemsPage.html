@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Items</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>User Items</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Action</th> <!-- Добавлен столбец для действия -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${userItems}">
+            <td th:text="${item.id}"></td>
+            <td th:text="${item.title}"></td>
+            <td th:text="${item.description}"></td>
+            <td>
+                <!-- Кнопка для перехода к конкретному объявлению -->
+                <a th:href="@{'/item/' + ${item.id}}" class="btn btn-primary btn-sm">View Item</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Bootstrap JS and jQuery (required for Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

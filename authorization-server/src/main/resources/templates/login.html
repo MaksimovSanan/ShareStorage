@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>NovaBook</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="login-page">
+    <div class="form">
+        <h2>Please Log In</h2>
+        <div class="error" th:if="${param.error}">
+            Invalid username and password.</div>
+        <div class="error" th:if="${param.logout}">
+            You have been logged out.</div>
+        <form  class="login-form" th:action="@{/login}" method="post">
+            <div>
+                <input type="text" name="username" placeholder="Email" required autofocus />
+            </div>
+            <div>
+                <input type="password" name="password" placeholder="Password" required />
+            </div>
+            <input class="button" type="submit" value="Log in" />
+        </form>
+        <a th:href="@{/registration}">Registration</a>
+    </div>
+</div>
+<!--<script th:src="@{/js/bootstrap.bundle.min.js}"></script>-->
+</body>
+</html>

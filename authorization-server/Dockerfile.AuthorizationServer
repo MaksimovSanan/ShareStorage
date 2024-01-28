@@ -1,0 +1,7 @@
+FROM openjdk:17
+
+COPY target/authorization-server-1.0-SNAPSHOT.jar /app.jar
+
+EXPOSE 9000
+
+ENTRYPOINT ["java", "-jar", "/app.jar"]

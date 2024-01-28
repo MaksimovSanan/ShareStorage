@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>NovaBook</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+    <form th:action="@{/registration}" th:method="post" th:object="${registrationDto}">
+        <p class="modal-title">Регистрация</p>
+        <div class="row gy-2 px-3">
+            <input type="text" class="form-control" th:field="*{email}" placeholder="Email">
+            <p style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">ValidError</p>
+            <input type="password" class="form-control" th:field="*{password}" placeholder="Пароль">
+            <p style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">ValidError</p>
+            <input type="password" class="form-control" th:field="*{repeatPassword}" placeholder="Повторите пароль">
+            <p style="color:red" th:if="${#fields.hasErrors('repeatPassword')}" th:errors="*{repeatPassword}">ValidError</p>
+            <button type="submit" class="btn btn-primary" data-bs-toggle="modal">Зарегестрироваться</button>
+        </div>
+    </form>
+<!--    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>-->
+</body>
+</html>

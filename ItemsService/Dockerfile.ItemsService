@@ -1,0 +1,11 @@
+# Используйте базовый образ с Java
+FROM openjdk:17
+
+# Копируйте JAR-файл в контейнер
+COPY target/ItemsService-0.0.1-SNAPSHOT.jar /app.jar
+
+# Откройте порт, на котором ваше приложение работает
+# EXPOSE 8096
+
+# Запустите приложение при старте контейнера
+ENTRYPOINT ["java", "-jar", "/app.jar"]
