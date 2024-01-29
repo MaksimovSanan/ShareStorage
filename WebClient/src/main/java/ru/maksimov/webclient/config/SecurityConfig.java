@@ -56,7 +56,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(
                         oauth2Login -> {
-                            oauth2Login.loginPage("/oauth2/authorization/nb-client-oidc");
+                            oauth2Login.loginPage("/oauth2/authorization/client-oidc");
                             oauth2Login.authorizationEndpoint().authorizationRequestResolver(resolver);
                             oauth2Login.userInfoEndpoint(userInfo -> userInfo
                                     .oidcUserService(this.oidcUserService()));
@@ -116,7 +116,7 @@ public class SecurityConfig {
 //                    (OAuth2AuthenticationToken) authentication;
 //            String clientRegistrationId =
 //                    oauthToken.getAuthorizedClientRegistrationId();
-//            if (clientRegistrationId.equals("nb-client-oidc")) {
+//            if (clientRegistrationId.equals("client-oidc")) {
 //                OAuth2AuthorizedClient client =
 //                        clientService.loadAuthorizedClient(
 //                                clientRegistrationId, oauthToken.getName());

@@ -95,6 +95,28 @@ RESTApp/
 После чего последовательно запустить eurekaserver, itemsservice, usersservice, security-server, webclient.
 # :(
 
+### P.S.S:
+Для вавшего удобства я подготовил несколько скриптовв для запуска приложения:
+1. Создание баз данных и их инициализация:
+   ```bash
+   sh build-scripts/init_databases.sh
+   ```
+   
+2. Сборка модулей приложения:
+   ```bash
+   sh build-scripts/build-modules.sh
+   ```
+   
+3. Запуск приложения:
+   ```bash
+   sh build-scripts/start_services.sh
+   ```
+   
+4. Дождитесь развертывания приложения в контейнерах
+
+5. Доступ к приложению: http://localhost:8080
+ps -ef | grep java
+
 Следуйте этим шагам для запуска проекта:
 
 1. Клонируйте репозиторий:

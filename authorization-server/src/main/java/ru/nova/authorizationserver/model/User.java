@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "nb_users")
+@Table(name = "users")
 public class User {
 
     private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class User {
     private String email;
     private String password;
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "nb_users_roles",
+    @JoinTable(name = "users_roles",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;

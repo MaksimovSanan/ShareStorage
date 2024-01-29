@@ -80,12 +80,12 @@ public class AuthorizationServerConfig {
 
         RegisteredClient registeredClient = RegisteredClient
                 .withId(UUID.randomUUID().toString())
-                .clientId("nb-client")
+                .clientId("client")
                 .clientSecret(passwordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8081/login/oauth2/code/nb-client-oidc")
+                .redirectUri("http://127.0.0.1:8081/login/oauth2/code/client-oidc")
                 .postLogoutRedirectUri("http://127.0.0.1:8081/logged-out")
                 .scope(OidcScopes.OPENID)
                 .tokenSettings(tokenSettings())
