@@ -37,7 +37,13 @@ public class RentController {
     }
 
     @GetMapping
-    public List<RentContractDTO> findAll(){
+    public List<RentContractDTO> findAll(@RequestParam(name = "borrowerId", required = false) Integer borrowerId){
+        if (borrowerId != null) {
+            return rentContractsService.findByBorrowerId(borrowerId)
+                    .stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
         return rentContractsService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 

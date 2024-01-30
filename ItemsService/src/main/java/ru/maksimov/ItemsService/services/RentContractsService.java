@@ -31,6 +31,10 @@ public class RentContractsService {
         return rentContractsRepository.findById(id).orElseThrow(ContractNotFoundException::new);
     }
 
+    public List<RentContract> findByBorrowerId(Integer borrowerId) {
+        return rentContractsRepository.findByBorrowerId(borrowerId);
+    }
+
     @Transactional
     public void save(RentContract rentContract) {
         enrichContract(rentContract);

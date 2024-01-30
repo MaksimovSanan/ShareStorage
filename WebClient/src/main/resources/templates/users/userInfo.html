@@ -3,26 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Information</title>
-    <!-- Bootstrap CSS -->
+    <title>User Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .user-info {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .items-info {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .contracts-info {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .item-link:hover,
+        .contract-link:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .item-link,
+        .contract-link {
+            color: #007bff;
+        }
+        .item-link:after,
+        .contract-link:after {
+            content: ' (View Details)';
+            font-size: 0.8em;
+        }
+        .btn-top-right {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1>User Information</h1>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title" th:text="${user.login}"></h5>
-            <p class="card-text"><strong>ID:</strong> <span th:text="${user.id}"></span></p>
-            <p class="card-text"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-            <a th:href="@{'/user/' + ${user.id} + '/items'}" class="btn btn-primary">View User's Items</a>
-            <a href="/" class="btn btn-secondary">Back to Home</a>
+<div class="container mt-5 position-relative">
+    <button onclick="window.history.back()" class="btn btn-secondary btn-top-right">Back</button>
+    <div class="row">
+        <div class="col-md-6 user-info">
+            <h2 th:text="${user.login}">User Login</h2>
+            <p>ID: <span th:text="${user.id}"></span></p>
+            <p>Email: <span th:text="${user.email}"></span></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 items-info">
+            <h2>Items available for sharing</h2>
+            <ul th:if="${userItems}">
+                <li th:each="item : ${userItems}">
+                    <span class="item-link" th:text="${item.title}" th:attr="data-item-id=${item.id}"></span> - <span th:text="${item.description}"></span>
+                </li>
+            </ul>
+            <p th:unless="${userItems}">No items found.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 contracts-info">
+            <h2>Sharing history</h2>
+            <ul th:if="${rentContracts}">
+                <li th:each="contract : ${rentContracts}">
+                    <span class="contract-link" th:text="${contract.rentalItem.title}" th:attr="data-item-id=${contract.rentalItem.id}"></span> - Reserved to: <span th:text="${contract.reservedTo}"></span>
+                </li>
+            </ul>
+            <p th:unless="${rentContracts}">No rent contracts found.</p>
         </div>
     </div>
 </div>
-<!-- Bootstrap JS and jQuery (required for Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.item-link, .contract-link').click(function() {
+            var itemId = $(this).data('item-id');
+            window.location.href = '/item/' + itemId;
+        });
+    });
+</script>
 </body>
 </html>

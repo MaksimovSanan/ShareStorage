@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 import ru.maksimov.webclient.models.Item;
+import ru.maksimov.webclient.models.RentContract;
 import ru.maksimov.webclient.models.User;
 
 import java.util.Arrays;
@@ -27,6 +28,10 @@ public class UsersController {
     public String getUserInfo(@PathVariable("id") int id, Model model){
         User user = restTemplate.getForObject("http://USERSSERVICE/users/" + id, User.class);
         model.addAttribute("user", user);
+        List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items?ownerId=" + id, Item[].class)).toList();
+        model.addAttribute("userItems", items);
+        List<RentContract> rentContracts = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/rent?borrowerId=" + id, RentContract[].class)).toList();
+        model.addAttribute("rentContracts", rentContracts);
         return "users/userInfo";
     }
 
