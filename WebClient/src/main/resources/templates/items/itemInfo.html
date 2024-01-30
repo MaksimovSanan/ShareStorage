@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Information</title>
+    <title th:text="${item.title}"></title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS -->
@@ -16,27 +16,65 @@
             color: greenyellow;
         }
 
-        .action-buttons {
-            margin-top: 10px;
+        .item-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .owner-info {
+            margin-top: 20px;
+        }
+
+        .owner-info p {
+            margin-bottom: 5px;
+        }
+
+        .vertical-align-middle {
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 576px) {
+            .vertical-align-middle {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Item Information</h1>
+    <a href="/" class="btn btn-secondary mb-3">Back to Home</a> <!-- Перемещенная кнопка "Back to Home" -->
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title" th:text="${item.title}"></h5>
-            <p class="card-text" th:text="${item.description}"></p>
-            <p class="card-text"><strong>Status:</strong>
-                <span th:text="${item.status == 1 ? 'Reserved' : 'Not Reserved'}"
-                      th:class="${item.status == 1 ? 'reserved' : 'not-reserved'}"></span>
-            </p>
-            <p class="card-text"><strong>Cost Per Hour:</strong> <span th:text="${item.costPerHour}"></span></p>
-            <p class="card-text"><strong>Cost Per Day:</strong> <span th:text="${item.costPerDay}"></span></p>
+            <!-- Блок с названием и статусом предмета -->
+            <div class="item-info vertical-align-middle">
+                <div>
+                    <h1 class="card-title" th:text="${item.title}"></h1> <!-- Заголовок с названием предмета -->
+                    <p class="card-text"><strong>Status:</strong>
+                        <span th:text="${item.status == 1 ? 'Reserved' : 'Not Reserved'}"
+                              th:class="${item.status == 1 ? 'reserved' : 'not-reserved'}"></span>
+                        <!-- Добавленная кнопка для аренды вещи -->
+                    <div th:if="${item.status == 0}" class="action-buttons">
+                        <a th:href="@{'/item/' + ${item.id} + '/rent'}" class="btn btn-success">Rent Item</a>
+                    </div>
+                    </p>
+                </div>
+                <!-- Блок с информацией о владельце -->
+                <div class="ml-auto owner-info">
+                    <p><strong>Owner:</strong> <span th:text="${item.ownerName}"></span></p>
+                    <a th:href="@{'/user/' + ${item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
+                </div>
+            </div>
+            <!-- Логический блок с описанием предмета -->
+            <div class="item-info">
+                <h5>Description:</h5>
+                <p class="card-text" th:text="${item.description}"></p>
+                <p class="card-text"><strong>Cost Per Hour:</strong> <span th:text="${item.costPerHour}"></span></p>
+                <p class="card-text"><strong>Cost Per Day:</strong> <span th:text="${item.costPerDay}"></span></p>
+            </div>
+            <!-- Блок с кнопками действий -->
             <div class="action-buttons">
-                <a th:href="@{'/user/' + ${item.ownerId}}" class="btn btn-primary">View Owner</a>
-                <a href="/" class="btn btn-secondary">Back to Home</a>
                 <a th:href="@{'/item/' + ${item.id} + '/edit'}" class="btn btn-info">Edit Item</a>
                 <!-- Кнопка для удаления элемента -->
                 <form th:action="@{'/item/' + ${item.id}}" method="post" style="display: inline;">

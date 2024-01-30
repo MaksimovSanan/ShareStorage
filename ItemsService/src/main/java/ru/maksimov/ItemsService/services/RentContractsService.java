@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.maksimov.ItemsService.models.RentContract;
+import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.repositories.RentContractsRepository;
 import ru.maksimov.ItemsService.util.exceptions.ContractNotFoundException;
 
@@ -15,10 +16,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RentContractsService {
     private final RentContractsRepository rentContractsRepository;
-
+    private final RentalItemsService rentalItemsService;
     @Autowired
-    public RentContractsService(RentContractsRepository rentContractsRepository) {
+    public RentContractsService(RentContractsRepository rentContractsRepository, RentalItemsService rentalItemsService) {
         this.rentContractsRepository = rentContractsRepository;
+        this.rentalItemsService = rentalItemsService;
     }
 
     public List<RentContract> findAll() {
@@ -32,8 +34,12 @@ public class RentContractsService {
     @Transactional
     public void save(RentContract rentContract) {
         enrichContract(rentContract);
-        rentContractsRepository.save(rentContract);
 
+        RentalItem rentalItem = rentalItemsService.findById(rentContract.getRentalItem().getId());
+        rentalItem.setStatus(1);
+        rentContract.setRentalItem(rentalItem);
+
+        rentContractsRepository.save(rentContract);
     }
 
 //    @Transactional

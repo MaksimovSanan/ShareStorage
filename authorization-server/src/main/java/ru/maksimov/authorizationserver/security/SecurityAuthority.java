@@ -1,8 +1,8 @@
-package ru.nova.authorizationserver.security;
+package ru.maksimov.authorizationserver.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import ru.nova.authorizationserver.model.Role;
+import ru.maksimov.authorizationserver.model.Role;
 
 @AllArgsConstructor
 public class SecurityAuthority implements GrantedAuthority {

@@ -1,7 +1,7 @@
-package ru.nova.authorizationserver.repository;
+package ru.maksimov.authorizationserver.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.nova.authorizationserver.model.Role;
+import ru.maksimov.authorizationserver.model.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 }

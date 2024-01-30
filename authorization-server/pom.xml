@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>ru.nova</groupId>
+    <groupId>ru.maksimov</groupId>
     <artifactId>authorization-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>authorization-server</name>

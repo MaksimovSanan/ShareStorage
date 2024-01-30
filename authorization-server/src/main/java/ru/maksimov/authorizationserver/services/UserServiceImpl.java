@@ -1,13 +1,13 @@
-package ru.nova.authorizationserver.services;
+package ru.maksimov.authorizationserver.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.nova.authorizationserver.model.Role;
-import ru.nova.authorizationserver.model.User;
-import ru.nova.authorizationserver.model.dto.RegistrationDto;
-import ru.nova.authorizationserver.repository.UserRepository;
+import ru.maksimov.authorizationserver.repository.UserRepository;
+import ru.maksimov.authorizationserver.model.Role;
+import ru.maksimov.authorizationserver.model.User;
+import ru.maksimov.authorizationserver.model.dto.RegistrationDto;
 
 import java.util.Collections;
 

@@ -1,4 +1,4 @@
-package ru.nova.authorizationserver.config;
+package ru.maksimov.authorizationserver.config;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -31,9 +30,9 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import ru.nova.authorizationserver.config.properties.AuthorizationServerProperties;
-import ru.nova.authorizationserver.config.utils.JwkUtils;
-import ru.nova.authorizationserver.services.UserService;
+import ru.maksimov.authorizationserver.config.properties.AuthorizationServerProperties;
+import ru.maksimov.authorizationserver.config.utils.JwkUtils;
+import ru.maksimov.authorizationserver.services.UserService;
 
 import java.util.Collection;
 import java.util.UUID;

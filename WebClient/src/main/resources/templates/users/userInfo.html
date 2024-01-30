@@ -14,7 +14,6 @@
         <div class="card-body">
             <h5 class="card-title" th:text="${user.login}"></h5>
             <p class="card-text"><strong>ID:</strong> <span th:text="${user.id}"></span></p>
-            <p class="card-text"><strong>Password:</strong> <span th:text="${user.password}"></span></p>
             <p class="card-text"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
             <a th:href="@{'/user/' + ${user.id} + '/items'}" class="btn btn-primary">View User's Items</a>
             <a href="/" class="btn btn-secondary">Back to Home</a>

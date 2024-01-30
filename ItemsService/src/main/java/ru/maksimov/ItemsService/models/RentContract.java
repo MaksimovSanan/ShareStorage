@@ -1,14 +1,17 @@
 package ru.maksimov.ItemsService.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "rent_contracts")
+@Data
 @NoArgsConstructor
 @Getter
 @Setter
@@ -20,6 +23,7 @@ public class RentContract {
 
     @ManyToOne()
     @JoinColumn(name = "item_id", referencedColumnName = "item_id")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private RentalItem rentalItem;
 
     @Column(name = "borrower_id")

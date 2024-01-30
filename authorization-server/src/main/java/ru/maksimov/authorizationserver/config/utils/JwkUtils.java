@@ -1,4 +1,4 @@
-package ru.nova.authorizationserver.config.utils;
+package ru.maksimov.authorizationserver.config.utils;
 
 import com.nimbusds.jose.jwk.RSAKey;
 

@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import ru.maksimov.webclient.models.Item;
+import ru.maksimov.webclient.models.NewRentContract;
 import ru.maksimov.webclient.models.User;
 
 import java.security.Principal;
@@ -53,29 +54,19 @@ public class ItemsController {
     @PostMapping("/addItem")
     public String addItem(@ModelAttribute Item newItem, Principal principal) {
 
-        System.out.println("YA TUT");
-        System.out.println(newItem);
-
         User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
 
-        //FIX IT WITH SECURITY
         newItem.setOwnerId(user.getId());
         newItem.setOwnerName(user.getLogin());
-        System.out.println("YA TUT2");
         newItem.setId(null);
-        System.out.println(newItem);
 
         String addItemUrl = "http://ITEMSSERVICE/items";
 
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<Item> requestEntity = new HttpEntity<>(newItem, headers);
-
         ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addItemUrl, requestEntity, Void.class);
 
-        System.out.println("YA TUT3");
         return "redirect:/"; // Перенаправляем пользователя на главную страницу
     }
 
@@ -89,6 +80,14 @@ public class ItemsController {
         HttpEntity<Item> requestEntity = new HttpEntity<>(item, headers);
 
         restTemplate.patchForObject("http://ITEMSSERVICE/items/" + id, requestEntity, Void.class);
-        return "redirect:http://localhost:8080/";
+        return "redirect:/";
+    }
+
+    @GetMapping("/{id}/rent")
+    public String rentItemForm(@PathVariable("id") Integer itemId, Model model,
+                               @ModelAttribute NewRentContract newRentContract) {
+        Item item = restTemplate.getForObject("http://ITEMSSERVICE/items/" + itemId, Item.class);
+        model.addAttribute("item", item);
+        return "items/rentItemForm"; // Название шаблона Thymeleaf для страницы с формой аренды
     }
 }

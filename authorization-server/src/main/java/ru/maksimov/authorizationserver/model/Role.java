@@ -1,4 +1,4 @@
-package ru.nova.authorizationserver.model;
+package ru.maksimov.authorizationserver.model;
 
 
 import jakarta.persistence.*;

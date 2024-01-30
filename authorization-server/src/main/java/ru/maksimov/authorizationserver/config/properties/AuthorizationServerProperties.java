@@ -1,4 +1,4 @@
-package ru.nova.authorizationserver.config.properties;
+package ru.maksimov.authorizationserver.config.properties;
 
 import lombok.Getter;
 import lombok.Setter;

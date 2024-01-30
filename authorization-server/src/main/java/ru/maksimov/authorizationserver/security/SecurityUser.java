@@ -1,9 +1,9 @@
-package ru.nova.authorizationserver.security;
+package ru.maksimov.authorizationserver.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.nova.authorizationserver.model.User;
+import ru.maksimov.authorizationserver.model.User;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

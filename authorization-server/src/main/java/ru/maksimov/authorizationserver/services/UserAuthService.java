@@ -1,13 +1,13 @@
-package ru.nova.authorizationserver.services;
+package ru.maksimov.authorizationserver.services;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.nova.authorizationserver.model.User;
-import ru.nova.authorizationserver.repository.UserRepository;
-import ru.nova.authorizationserver.security.SecurityUser;
+import ru.maksimov.authorizationserver.repository.UserRepository;
+import ru.maksimov.authorizationserver.security.SecurityUser;
+import ru.maksimov.authorizationserver.model.User;
 
 import java.util.Optional;
 

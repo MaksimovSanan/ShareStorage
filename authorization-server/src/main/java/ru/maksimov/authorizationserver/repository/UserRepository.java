@@ -1,8 +1,8 @@
-package ru.nova.authorizationserver.repository;
+package ru.maksimov.authorizationserver.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.nova.authorizationserver.model.User;
+import ru.maksimov.authorizationserver.model.User;
 
 import java.util.Optional;
 

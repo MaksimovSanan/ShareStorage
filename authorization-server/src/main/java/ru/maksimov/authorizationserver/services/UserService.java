@@ -1,6 +1,6 @@
-package ru.nova.authorizationserver.services;
+package ru.maksimov.authorizationserver.services;
 
-import ru.nova.authorizationserver.model.dto.RegistrationDto;
+import ru.maksimov.authorizationserver.model.dto.RegistrationDto;
 
 public interface UserService {
     boolean saveUser(RegistrationDto registrationDto);

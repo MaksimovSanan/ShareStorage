@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 import ru.maksimov.webclient.models.Item;
+import ru.maksimov.webclient.models.NewRentContract;
 import ru.maksimov.webclient.models.NewUser;
 import ru.maksimov.webclient.models.User;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,32 +56,28 @@ public class MainController {
         return "homePage";
     }
 
-    @PostMapping("/addItem")
-    public String addItem(@ModelAttribute Item newItem, Principal principal) {
+    @PostMapping("/submitRentContract")
+    public String submitRent(@ModelAttribute NewRentContract newRentContract, Principal principal){
 
-        System.out.println("YA TUT");
-        System.out.println(newItem);
+        newRentContract.setReservedTo(LocalDateTime.parse(newRentContract.getReservedToFromForm() + "T00:00:00"));
+
+        System.out.println(newRentContract);
 
         User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
 
-        //FIX IT WITH SECURITY
-        newItem.setOwnerId(user.getId());
-        newItem.setOwnerName(user.getLogin());
-        System.out.println("YA TUT2");
-        newItem.setId(null);
-        System.out.println(newItem);
+        newRentContract.setBorrowerId(user.getId());
 
-        String addItemUrl = "http://ITEMSSERVICE/items";
-
+        String addContractUrl = "http://ITEMSSERVICE/rent";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Item> requestEntity = new HttpEntity<>(newItem, headers);
 
-        ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addItemUrl, requestEntity, Void.class);
+        HttpEntity<NewRentContract> requestEntity = new HttpEntity<>(newRentContract, headers);
 
-        System.out.println("YA TUT3");
-        return "redirect:http://localhost:8081/"; // Перенаправляем пользователя на главную страницу
+        ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addContractUrl, requestEntity, Void.class);
+
+        return "redirect:/item/" + newRentContract.getRentalItemId();
     }
+
 }
