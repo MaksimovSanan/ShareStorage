@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Создание базы данных "authorized_users"
-psql -U postgres -c "CREATE DATABASE authorized_users;"
+psql -U sanan -c "CREATE DATABASE authorized_users;"
 
 # Выполнение SQL-скрипта
-psql -U postgres -d authorized_users -c "
+psql -U sanan -d authorized_users -c "
     DROP TABLE IF EXISTS users_roles CASCADE;
     DROP TABLE IF EXISTS users CASCADE;
     DROP TABLE IF EXISTS roles CASCADE;
@@ -37,17 +37,18 @@ psql -U postgres -d authorized_users -c "
 "
 
 # Создание базы данных "items_service_db"
-psql -U postgres -c "CREATE DATABASE users_service_db;"
+psql -U sanan -c "CREATE DATABASE users_service_db;"
 
 
 # Выполнение SQL-скрипта
-psql -U postgres -d users_service_db -c "
+psql -U sanan -d users_service_db -c "
     DROP TABLE IF EXISTS users CASCADE;
 
     CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
     login VARCHAR(50) NOT NULL,
     email VARCHAR(255) UNIQUE,
+    phone_number VARCHAR(11),
     created_at TIMESTAMP
     );
 
@@ -59,10 +60,10 @@ psql -U postgres -d users_service_db -c "
 
 
 # Создание базы данных "items_service_db"
-psql -U postgres -c "CREATE DATABASE items_service_db;"
+psql -U sanan -c "CREATE DATABASE items_service_db;"
 
 # Выполнение SQL-скрипта
-psql -U postgres -d items_service_db -c "
+psql -U sanan -d items_service_db -c "
     DROP TABLE IF EXISTS rental_items CASCADE;
 
     CREATE TABLE IF NOT EXISTS rental_items(

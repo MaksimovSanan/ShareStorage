@@ -34,6 +34,9 @@ public class User {
     @NotEmpty(message = "Email should not be empty")
     private String email;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
