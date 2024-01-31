@@ -6,10 +6,34 @@
     <title>Home Page</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Стили для круглой кнопки с изображением пользователя */
+        .user-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #007bff; /* Цвет фона кнопки */
+            color: #fff; /* Цвет иконки (белый) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+    <style>
+        .user-image {
+            width: 50px; /* Задайте желаемую ширину изображения */
+            height: auto; /* Сохраните соотношение сторон изображения */
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
     <h1>Ads</h1>
+    <!-- Кнопка для добавления нового товара -->
     <a class="btn btn-primary mb-3" href="/item/new">Add New Item</a>
     <table class="table">
         <thead>
@@ -40,9 +64,23 @@
     </table>
 </div>
 
+<!-- Кнопка для перехода на личную страницу пользователя -->
+<div class="user-button">
+    <a th:href="@{'/user/' + ${user.id}}">
+        <img class="user-image" src="https://cdn-icons-png.flaticon.com/512/149/149452.png" alt="User Image">
+    </a>
+</div>
+
 <!-- Bootstrap JS and jQuery (required for Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Функция для перехода на страницу пользователя
+    function redirectToUserPage(userId) {
+        window.location.href = "/user/" + userId;
+    }
+</script>
 </body>
 </html>

@@ -11,8 +11,10 @@ import ru.maksimov.webclient.models.Item;
 import ru.maksimov.webclient.models.RentContract;
 import ru.maksimov.webclient.models.User;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
@@ -25,12 +27,27 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public String getUserInfo(@PathVariable("id") int id, Model model){
+    public String getUserInfo(@PathVariable("id") int id, Model model, Principal principal){
         User user = restTemplate.getForObject("http://USERSSERVICE/users/" + id, User.class);
         model.addAttribute("user", user);
-        List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items?ownerId=" + id, Item[].class)).toList();
+
+        // TODO UserNotFoundPage
+        assert user != null;
+
+        if(user.getEmail().equals(principal.getName())) {
+            model.addAttribute("role", "owner");
+        } else {
+            model.addAttribute("role", "guest");
+        }
+
+
+        List<Item> items = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
+                "http://ITEMSSERVICE/items?ownerId=" + id, Item[].class)
+        )).toList();
         model.addAttribute("userItems", items);
-        List<RentContract> rentContracts = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/rent?borrowerId=" + id, RentContract[].class)).toList();
+        List<RentContract> rentContracts = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
+                "http://ITEMSSERVICE/rent?borrowerId=" + id + "&ownerId=" + id, RentContract[].class)
+        )).toList();
         model.addAttribute("rentContracts", rentContracts);
         return "users/userInfo";
     }

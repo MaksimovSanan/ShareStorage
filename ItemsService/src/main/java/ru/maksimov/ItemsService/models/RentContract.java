@@ -35,11 +35,16 @@ public class RentContract {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "reserved_from")
+    private LocalDateTime reservedFrom;
+
     @Column(name = "reserved_to")
     private LocalDateTime reservedTo;
 
-    public RentContract(RentalItem rentalItem, Integer borrowerId) {
-        this.rentalItem = rentalItem;
-        this.borrowerId = borrowerId;
-    }
+    @Column(name = "comment")
+    private String comment;
+
+    @Column(name = "status")
+    private Integer status;
+
 }

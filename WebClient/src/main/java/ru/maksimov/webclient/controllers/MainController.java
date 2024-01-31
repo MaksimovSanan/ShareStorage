@@ -51,33 +51,10 @@ public class MainController {
 
             System.out.println("USER WITH EMAIL: " + principal.getName() + " LOGIN : " + principal.getName() + " WAS ADDED TO RELATION USERS");
         }
+        model.addAttribute("user", user);
         List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items", Item[].class)).toList();
         model.addAttribute("items", items);
         return "homePage";
-    }
-
-    @PostMapping("/submitRentContract")
-    public String submitRent(@ModelAttribute NewRentContract newRentContract, Principal principal){
-
-        newRentContract.setReservedTo(LocalDateTime.parse(newRentContract.getReservedToFromForm() + "T00:00:00"));
-
-        System.out.println(newRentContract);
-
-        User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
-
-        newRentContract.setBorrowerId(user.getId());
-
-        String addContractUrl = "http://ITEMSSERVICE/rent";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-
-        HttpEntity<NewRentContract> requestEntity = new HttpEntity<>(newRentContract, headers);
-
-        ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addContractUrl, requestEntity, Void.class);
-
-        return "redirect:/item/" + newRentContract.getRentalItemId();
     }
 
 }

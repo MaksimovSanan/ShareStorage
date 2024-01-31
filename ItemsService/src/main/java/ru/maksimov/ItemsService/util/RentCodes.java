@@ -1,11 +1,9 @@
 package ru.maksimov.ItemsService.util;
 
 public class RentCodes {
-    public static int borrowBook = 201;
-    public static int returnBook = 202;
+    public static int open = 201;
+    public static int closed = 202;
+    public static int request = 205;
 
-/*
-    TODO
-    public static int reservation = 203;
-*/
+    public static int rejectRequest = 210;
 }

@@ -32,12 +32,34 @@
 <body>
 <div class="container">
     <h1 th:text="${item.title + ' - Rent Item'}"></h1>
-    <form id="rentForm" th:action="@{/submitRentContract}" method="post">
+    <form id="rentForm" th:action="@{rent/submitRentContract}" th:object="${newRentContract}" method="post">
         <!-- Скрытое поле для передачи значения itemId -->
         <input type="hidden" id="rentalItemId" name="rentalItemId" th:value="${item.id}"/>
+        <!-- Скрытое поле для передачи значения status -->
+        <input type="hidden" id="status" name="status" th:value="205"/>
         <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" class="form-control" id="date" name="reservedToFromForm" required min="{{T(java.time.LocalDate).now()}}"/>
+            <label for="reservedFromDateFromForm">Reserved From Date:</label>
+            <input type="date" class="form-control" id="reservedFromDateFromForm" name="reservedFromDateFromForm" th:value="${#dates.format(newRentContract.reservedFrom, 'yyyy-MM-dd')}" required/>
+        </div>
+        <div class="form-group">
+            <label for="reservedToDateFromForm">Reserved To Date:</label>
+            <input type="date" class="form-control" id="reservedToDateFromForm" name="reservedToDateFromForm" th:value="${#dates.format(newRentContract.reservedTo, 'yyyy-MM-dd')}" required/>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="specificTimeCheckbox" name="specificTimeCheckbox">
+            <label class="form-check-label" for="specificTimeCheckbox">Specify Time</label>
+        </div>
+        <div class="form-group specific-time-fields" style="display:none;">
+            <label for="reservedFromTimeFromForm">Reserved From Time:</label>
+            <input type="time" class="form-control" id="reservedFromTimeFromForm" name="reservedFromTimeFromForm" th:value="${#dates.format(newRentContract.reservedFrom, 'HH:mm')}"/>
+        </div>
+        <div class="form-group specific-time-fields" style="display:none;">
+            <label for="reservedToTimeFromForm">Reserved To Time:</label>
+            <input type="time" class="form-control" id="reservedToTimeFromForm" name="reservedToTimeFromForm" th:value="${#dates.format(newRentContract.reservedTo, 'HH:mm')}"/>
+        </div>
+        <div class="form-group">
+            <label for="comment">Comment:</label>
+            <textarea class="form-control" id="comment" name="comment" th:value="${newRentContract.comment}"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -46,5 +68,16 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#specificTimeCheckbox').change(function(){
+            if(this.checked) {
+                $('.specific-time-fields').show();
+            } else {
+                $('.specific-time-fields').hide();
+            }
+        });
+    });
+</script>
 </body>
 </html>

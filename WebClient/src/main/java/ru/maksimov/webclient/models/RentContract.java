@@ -20,5 +20,11 @@ public class RentContract {
 
     private LocalDateTime updatedAt;
 
+    private LocalDateTime reservedFrom;
+
     private LocalDateTime reservedTo;
+
+    private String comment;
+
+    private Integer status;
 }

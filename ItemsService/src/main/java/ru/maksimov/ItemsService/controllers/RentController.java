@@ -1,6 +1,8 @@
 package ru.maksimov.ItemsService.controllers;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/rent")
 public class RentController {
 
-//    private final BooksService booksService;
-//    private final PeopleService peopleService;
     private final RentContractsService rentContractsService;
     private final ModelMapper modelMapper;
 
@@ -37,9 +37,10 @@ public class RentController {
     }
 
     @GetMapping
-    public List<RentContractDTO> findAll(@RequestParam(name = "borrowerId", required = false) Integer borrowerId){
-        if (borrowerId != null) {
-            return rentContractsService.findByBorrowerId(borrowerId)
+    public List<RentContractDTO> findAll(@RequestParam(name = "borrowerId", required = false) Integer borrowerId,
+                                         @RequestParam(name = "ownerId", required = false) Integer ownerId){
+        if (borrowerId != null || ownerId != null) {
+            return rentContractsService.findAllByOwnerIdOrBorrowerId(borrowerId, ownerId)
                     .stream()
                     .map(this::convertToDTO)
                     .collect(Collectors.toList());
@@ -78,28 +79,29 @@ public class RentController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<HttpStatus> update(@PathVariable("id") int id, @RequestBody @Valid NewRentContractDTO newRentContractDTO,
-                                             BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error : errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-            throw new ContractNotCreatedException(errorMsg.toString());
+    public ResponseEntity<RentContractDTO> updateRentContract(@PathVariable int id,
+                                                           @RequestBody RentContractDTO rentContractUpdates) {
+
+        RentContract updatedRentContract = rentContractsService.updateRentContract(id, rentContractUpdates);
+        if (updatedRentContract == null) {
+            return ResponseEntity.notFound().build();
         }
-
-        RentContract rentContract = rentContractsService.findById(id);
-        RentContract updatedRectContract = modelMapper.map(newRentContractDTO, RentContract.class);
-
-        updatedRectContract.setId(id);
-        updatedRectContract.setCreatedAt(rentContract.getCreatedAt());
-
-        rentContractsService.save(updatedRectContract);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(convertToDTO(updatedRentContract));
     }
+
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<HttpStatus> update(@PathVariable("id") int id, @RequestBody @Valid NewRentContractDTO newRentContractDTO,
+//                                             BindingResult bindingResult) {
+//
+//        RentContract rentContract = rentContractsService.findById(id);
+//        RentContract updatedRectContract = modelMapper.map(newRentContractDTO, RentContract.class);
+//
+//        updatedRectContract.setId(id);
+//        updatedRectContract.setCreatedAt(rentContract.getCreatedAt());
+//
+//        rentContractsService.save(updatedRectContract);
+//        return ResponseEntity.ok(HttpStatus.OK);
+//    }
 
     private RentContractDTO convertToDTO(RentContract rentContract) {
         /* it may me method of modelMapper
@@ -114,14 +116,12 @@ public class RentController {
         return modelMapper.map(rentContract, RentContractDTO.class);
     }
 
-    @ExceptionHandler
-    private ResponseEntity<ContractErrorResponse> handleException(ContractNotCreatedException badRequestException){
-        ContractErrorResponse contractErrorResponse = new ContractErrorResponse(
-                badRequestException.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(contractErrorResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(ContractNotCreatedException.class)
+//    public ResponseEntity<ContractErrorResponse> handleContractNotCreatedException(ContractNotCreatedException ex) {
+//        ContractErrorResponse contractErrorResponse = new ContractErrorResponse(ex.getMessage(), System.currentTimeMillis());
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(contractErrorResponse);
+//    }
+
     @ExceptionHandler
     private ResponseEntity<ContractErrorResponse> handleException(ContractNotFoundException contractNotFoundException){
         ContractErrorResponse contractErrorResponse = new ContractErrorResponse(

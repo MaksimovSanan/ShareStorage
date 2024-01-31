@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Information</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Добавьте стили по вашему усмотрению */
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Contract Information</h2>
+    <div th:if="${rentContract}">
+        <p>ID: <span th:text="${rentContract.id}"></span></p>
+        <p>Rental Item: <span th:text="${rentContract.rentalItem.title}"></span></p>
+        <p>Borrower ID: <span th:text="${rentContract.borrowerId}"></span></p>
+        <p>Created At: <span th:text="${rentContract.createdAt}"></span></p>
+        <p>Updated At: <span th:text="${rentContract.updatedAt}"></span></p>
+        <p>Reserved From: <span th:text="${rentContract.reservedFrom}"></span></p>
+        <p>Reserved To: <span th:text="${rentContract.reservedTo}"></span></p>
+        <p>Comment: <span th:text="${rentContract.comment}"></span></p>
+        <p>Status: <span th:text="${rentContract.status}"></span></p>
+        <form th:action="@{'/rent/' + ${rentContract.id} + '/decide'}" th:object="${rentContract}" method="post">
+            <input type="hidden" name="id" th:value="${rentContract.id}">
+            <button type="submit" name="status" value="201" class="btn btn-primary">Confirm</button>
+            <button type="submit" name="status" value="210" class="btn btn-danger">Reject</button>
+        </form>
+    </div>
+    <div th:unless="${rentContract}">
+        <p>Contract not found.</p>
+    </div>
+</div>
+</body>
+</html>

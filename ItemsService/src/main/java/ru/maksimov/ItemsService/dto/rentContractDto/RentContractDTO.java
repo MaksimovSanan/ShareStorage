@@ -1,11 +1,13 @@
 package ru.maksimov.ItemsService.dto.rentContractDto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.maksimov.ItemsService.dto.itemDto.ItemDTO;
 
 import java.time.LocalDateTime;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class RentContractDTO {
@@ -19,7 +21,11 @@ public class RentContractDTO {
 
     private LocalDateTime updatedAt;
 
+    private LocalDateTime reservedFrom;
+
     private LocalDateTime reservedTo;
-    public RentContractDTO() {
-    }
+
+    private String comment;
+
+    private Integer status;
 }

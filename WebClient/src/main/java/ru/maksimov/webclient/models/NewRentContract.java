@@ -14,11 +14,22 @@ public class NewRentContract {
     @NotNull(message = "RentalItem ID cannot be empty")
     private Integer rentalItemId;
 
-    @NotNull(message = "Borrower ID cannot be empty")
     private Integer borrowerId;
 
-    private LocalDateTime reservedTo;
+    @NotNull(message = "Field reservedFrom cannot be empty")
+    private LocalDateTime reservedFrom;
 
     @NotNull(message = "Field reservedTo cannot be empty")
-    private String reservedToFromForm;
+    private LocalDateTime reservedTo;
+
+    private String comment;
+
+    @NotNull(message = "Status cannot be empty")
+    private Integer status;
+
+    private String reservedFromDateFromForm;
+    private String reservedFromTimeFromForm;
+    private String reservedToDateFromForm;
+    private String reservedToTimeFromForm;
+
 }
