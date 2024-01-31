@@ -32,7 +32,7 @@
 <body>
 <div class="container">
     <h1 th:text="${item.title + ' - Rent Item'}"></h1>
-    <form id="rentForm" th:action="@{rent/submitRentContract}" th:object="${newRentContract}" method="post">
+    <form id="rentForm" th:action="@{/rent/submitRentContract}" th:object="${newRentContract}" method="post">
         <!-- Скрытое поле для передачи значения itemId -->
         <input type="hidden" id="rentalItemId" name="rentalItemId" th:value="${item.id}"/>
         <!-- Скрытое поле для передачи значения status -->
