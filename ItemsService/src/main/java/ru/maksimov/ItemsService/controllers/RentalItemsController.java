@@ -13,9 +13,7 @@ import ru.maksimov.ItemsService.dto.itemDto.ItemDTO;
 import ru.maksimov.ItemsService.dto.itemDto.NewItemDTO;
 import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.services.RentalItemsService;
-import ru.maksimov.ItemsService.util.ItemErrorResponse;
-import ru.maksimov.ItemsService.util.exceptions.BadRequestException;
-import ru.maksimov.ItemsService.util.exceptions.ItemNotCreatedException;
+import ru.maksimov.ItemsService.util.MyHelper;
 import ru.maksimov.ItemsService.util.exceptions.ItemNotFoundException;
 
 
@@ -27,7 +25,6 @@ import java.util.stream.Collectors;
 public class RentalItemsController {
 
     private final RentalItemsService rentalItemsService;
-//    private final PeopleService peopleService;
     private final ModelMapper modelMapper;
 
     @Autowired
@@ -37,92 +34,74 @@ public class RentalItemsController {
     }
 
     @GetMapping
-    public List<ItemDTO> getItems(@RequestParam(name = "ownerId", required = false) Integer ownerId,
+    public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "ownerId", required = false) Integer ownerId,
                                   @RequestParam(name = "status", required = false) Integer status) {
+        List<RentalItem> items;
         if (ownerId != null && status != null) {
-            return rentalItemsService.findByOwnerIdAndStatus(ownerId, status)
-                    .stream()
-                    .map(this::convertToItemDTO)
-                    .collect(Collectors.toList());
+            items = rentalItemsService.findByOwnerIdAndStatus(ownerId, status);
         } else if (ownerId != null) {
-            return rentalItemsService.findByOwnerId(ownerId)
-                    .stream()
-                    .map(this::convertToItemDTO)
-                    .collect(Collectors.toList());
+            items = rentalItemsService.findByOwnerId(ownerId);
         } else if (status != null) {
-            return rentalItemsService.findByStatus(status)
-                    .stream()
-                    .map(this::convertToItemDTO)
-                    .collect(Collectors.toList());
+            items = rentalItemsService.findByStatus(status);
         } else {
-            return rentalItemsService.findAll()
-                    .stream()
-                    .map(this::convertToItemDTO)
-                    .collect(Collectors.toList());
+            items = rentalItemsService.findAll();
         }
+        return ResponseEntity.ok(items.stream().map(this::convertToItemDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ItemDTO findOne(@PathVariable("id") int id) {
-        return convertToItemDTO(rentalItemsService.findById(id));
+    public ResponseEntity<ItemDTO> findOne(@PathVariable("id") int id) {
+        return ResponseEntity.ok(convertToItemDTO(rentalItemsService.findById(id)));
     }
 
     @Transactional
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid NewItemDTO newItemDTO,
+    public ResponseEntity<String> create(@RequestBody @Valid NewItemDTO newItemDTO,
                                              BindingResult bindingResult) {
-        System.out.println(newItemDTO);
-        if(bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error: errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-                throw new ItemNotCreatedException(errorMsg.toString());
-            }
+
+        String errMsg = MyHelper.handlingBindingResult(bindingResult);
+        if(!errMsg.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errMsg);
         }
+
         RentalItem rentalItem = convertToItem(newItemDTO);
+
+//        how can i fix it
         rentalItem.setId(null);
-        // how can i fix it
-        rentalItemsService.save(rentalItem);
-        return ResponseEntity.ok(HttpStatus.CREATED);
+
+        try {
+            rentalItemsService.save(rentalItem);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while creating item: " + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("Item created successfully");
     }
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<String> delete(@PathVariable("id") int id) {
         RentalItem rentalItem = rentalItemsService.findById(id);
-        rentalItemsService.delete(rentalItem);
-        return ResponseEntity.ok(HttpStatus.OK);
+        try{
+            rentalItemsService.delete(rentalItem);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while deleting item:" + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("item was deleted");
     }
 
     @Transactional
     @PatchMapping("/{id}")
-    public ResponseEntity<HttpStatus> update(@PathVariable("id") int id,
-                                             @RequestBody @Valid NewItemDTO newItemDTO,
-                                             BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error: errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-                throw new ItemNotCreatedException(errorMsg.toString());
-            }
+    public ResponseEntity<ItemDTO> update(@PathVariable("id") int id,
+                                             @RequestBody ItemDTO itemDTO) {
+
+        RentalItem updatedRentalItem = rentalItemsService.update(id, itemDTO);
+        if (updatedRentalItem == null) {
+            return ResponseEntity.notFound().build();
         }
-        RentalItem rentalItemToBeUpdated = rentalItemsService.findById(id);
-        rentalItemToBeUpdated.setTitle(newItemDTO.getTitle());
-        rentalItemToBeUpdated.setDescription(newItemDTO.getDescription());
-        if(newItemDTO.getCostPerDay() != null) {
-            rentalItemToBeUpdated.setCostPerDay(newItemDTO.getCostPerDay());
-        }
-        if(newItemDTO.getCostPerHour() != null) {
-            rentalItemToBeUpdated.setCostPerHour(newItemDTO.getCostPerHour());
-        }
-        rentalItemsService.save(rentalItemToBeUpdated);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(convertToItemDTO(updatedRentalItem));
     }
 
     private ItemDTO convertToItemDTO(RentalItem rentalItem) {
@@ -134,29 +113,8 @@ public class RentalItemsController {
     }
 
     @ExceptionHandler
-    private ResponseEntity<ItemErrorResponse> handleException(ItemNotFoundException itemNotFoundException) {
-        ItemErrorResponse itemErrorResponse = new ItemErrorResponse(
-                "Item with this id not found",
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(itemErrorResponse, HttpStatus.NOT_FOUND); // NOT_FOUND - 404
+    private ResponseEntity<HttpStatus> handleException(ItemNotFoundException itemNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @ExceptionHandler
-    private ResponseEntity<ItemErrorResponse> handleException(ItemNotCreatedException itemNotCreatedException) {
-        ItemErrorResponse itemErrorResponse = new ItemErrorResponse(
-                itemNotCreatedException.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(itemErrorResponse, HttpStatus.BAD_REQUEST); // NOT_FOUND - 404
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<ItemErrorResponse> handleException(BadRequestException badRequestException){
-        ItemErrorResponse itemErrorResponse = new ItemErrorResponse(
-                badRequestException.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(itemErrorResponse, HttpStatus.BAD_REQUEST);
-    }
 }

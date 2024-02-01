@@ -1,11 +1,7 @@
 package ru.maksimov.ItemsService.services;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,14 +9,12 @@ import ru.maksimov.ItemsService.dto.rentContractDto.RentContractDTO;
 import ru.maksimov.ItemsService.models.RentContract;
 import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.repositories.RentContractsRepository;
+import ru.maksimov.ItemsService.util.MyHelper;
 import ru.maksimov.ItemsService.util.RentCodes;
 import ru.maksimov.ItemsService.util.exceptions.ContractNotFoundException;
 
-import java.beans.PropertyDescriptor;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,14 +45,6 @@ public class RentContractsService {
     @Transactional
     public void save(RentContract rentContract) {
         enrichContract(rentContract);
-        RentalItem rentalItem = rentalItemsService.findById(rentContract.getRentalItem().getId());
-        if(rentContract.getStatus() == RentCodes.open) {
-            rentalItem.setStatus(1);
-        }
-        else if(rentContract.getStatus() == RentCodes.closed) {
-            rentalItem.setStatus(0);
-        }
-        rentContract.setRentalItem(rentalItem);
         rentContractsRepository.save(rentContract);
     }
 
@@ -72,27 +58,16 @@ public class RentContractsService {
         LocalDateTime now = LocalDateTime.now();
         rentContractUpdates.setUpdatedAt(now);
 
-        copyNonNullProperties(rentContractUpdates, existingRentContract);
+        MyHelper.copyNonNullProperties(rentContractUpdates, existingRentContract);
 
-        existingRentContract.getRentalItem().setStatus(1);
+        if(existingRentContract.getStatus() == 201) {
+            existingRentContract.getRentalItem().setStatus(1);
+        }
+        else if(existingRentContract.getStatus() == 202) {
+            existingRentContract.getRentalItem().setStatus(0);
+        }
 
         return entityManager.merge(existingRentContract);
-    }
-
-    private void copyNonNullProperties(Object source, Object target) {
-        BeanUtils.copyProperties(source, target, getNullPropertyNames(source));
-    }
-
-    private String[] getNullPropertyNames(Object source) {
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        Set<String> emptyNames = new HashSet<>();
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) emptyNames.add(pd.getName());
-        }
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
     }
     @Transactional
     public void delete(RentContract rentContract) {

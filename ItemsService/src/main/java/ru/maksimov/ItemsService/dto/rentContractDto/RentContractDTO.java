@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class RentContractDTO {
-    private int id;
+    private Integer id;
 
     private ItemDTO rentalItem;
 

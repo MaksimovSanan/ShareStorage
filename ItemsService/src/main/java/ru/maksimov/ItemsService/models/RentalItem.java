@@ -43,14 +43,4 @@ public class RentalItem {
 
     @OneToMany(mappedBy = "rentalItem")
     private List<RentContract> rentContracts;
-
-    public RentalItem(Integer ownerId, String title, String description) {
-        this.ownerId = ownerId;
-        this.title = title;
-        this.description = description;
-    }
-
-    public RentalItem(Integer id) {
-        this.id = id;
-    }
 }
