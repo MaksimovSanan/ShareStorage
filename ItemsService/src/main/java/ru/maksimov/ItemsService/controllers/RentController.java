@@ -1,22 +1,17 @@
 package ru.maksimov.ItemsService.controllers;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.maksimov.ItemsService.dto.rentContractDto.NewRentContractDTO;
 import ru.maksimov.ItemsService.dto.rentContractDto.RentContractDTO;
 import ru.maksimov.ItemsService.models.RentContract;
 import ru.maksimov.ItemsService.services.RentContractsService;
-import ru.maksimov.ItemsService.util.ContractErrorResponse;
-import ru.maksimov.ItemsService.util.exceptions.ContractNotCreatedException;
+import ru.maksimov.ItemsService.util.MyHelper;
 import ru.maksimov.ItemsService.util.exceptions.ContractNotFoundException;
 
 import java.util.List;
@@ -37,49 +32,78 @@ public class RentController {
     }
 
     @GetMapping
-    public List<RentContractDTO> findAll(@RequestParam(name = "borrowerId", required = false) Integer borrowerId,
-                                         @RequestParam(name = "ownerId", required = false) Integer ownerId){
+    public ResponseEntity<List<RentContractDTO>> findAll(
+            @RequestParam(name = "borrowerId", required = false) Integer borrowerId,
+            @RequestParam(name = "ownerId", required = false) Integer ownerId) {
+
+        List<RentContract> rentContracts;
+
         if (borrowerId != null || ownerId != null) {
-            return rentContractsService.findAllByOwnerIdOrBorrowerId(borrowerId, ownerId)
-                    .stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+            rentContracts = rentContractsService.findAllByOwnerIdOrBorrowerId(borrowerId, ownerId);
+        } else {
+            rentContracts = rentContractsService.findAll();
         }
-        return rentContractsService.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+
+        if (rentContracts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.ok(
+                    rentContracts.stream()
+                            .map(this::convertToDTO)
+                            .collect(Collectors.toList())
+                    );
+        }
     }
 
     @GetMapping("/{id}")
-    public RentContractDTO findOne(@PathVariable("id") int id) {
-        return convertToDTO(rentContractsService.findById(id));
+    public ResponseEntity<RentContractDTO> findOne(@PathVariable("id") int id) {
+        RentContract rentContract = rentContractsService.findById(id);
+        if(rentContract != null) {
+            return ResponseEntity.ok(convertToDTO(rentContract));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid NewRentContractDTO newRentContractDTO,
+    public ResponseEntity<String> create(@RequestBody @Valid NewRentContractDTO newRentContractDTO,
                                              BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for(FieldError error : errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-            throw new ContractNotCreatedException(errorMsg.toString());
+
+        String errMsg = MyHelper.handlingBindingResult(bindingResult);
+        if(!errMsg.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errMsg);
         }
         RentContract rentContract = modelMapper.map(newRentContractDTO, RentContract.class);
-        rentContractsService.save(rentContract);
-        return ResponseEntity.ok(HttpStatus.CREATED); // empty body status 200
+
+        //        how can i fix it
+        rentContract.setId(null);
+
+        try {
+            rentContractsService.save(rentContract);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while creating rentContract:" + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("Contract created successfully");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
+    public ResponseEntity<String> delete(@PathVariable("id") int id) {
         RentContract rentContract = rentContractsService.findById(id);
-        rentContractsService.delete(rentContract);
-        return ResponseEntity.ok(HttpStatus.OK);
+        try{
+            rentContractsService.delete(rentContract);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while deleting contract:" + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Contract was deleted");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<RentContractDTO> updateRentContract(@PathVariable int id,
+    public ResponseEntity<RentContractDTO> updateRentContract(@PathVariable("id") int id,
                                                            @RequestBody RentContractDTO rentContractUpdates) {
 
         RentContract updatedRentContract = rentContractsService.updateRentContract(id, rentContractUpdates);
@@ -89,55 +113,12 @@ public class RentController {
         return ResponseEntity.ok(convertToDTO(updatedRentContract));
     }
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<HttpStatus> update(@PathVariable("id") int id, @RequestBody @Valid NewRentContractDTO newRentContractDTO,
-//                                             BindingResult bindingResult) {
-//
-//        RentContract rentContract = rentContractsService.findById(id);
-//        RentContract updatedRectContract = modelMapper.map(newRentContractDTO, RentContract.class);
-//
-//        updatedRectContract.setId(id);
-//        updatedRectContract.setCreatedAt(rentContract.getCreatedAt());
-//
-//        rentContractsService.save(updatedRectContract);
-//        return ResponseEntity.ok(HttpStatus.OK);
-//    }
-
     private RentContractDTO convertToDTO(RentContract rentContract) {
-        /* it may me method of modelMapper
-        return new RentContractDTO(rentContract.getId(),
-                rentContract.getBorrower().getId(),
-                rentContract.getRentObject().getId(),
-                rentContract.getCreatedAt(),
-                rentContract.getUpdatedAt()
-        );
-         */
-
         return modelMapper.map(rentContract, RentContractDTO.class);
     }
-
-//    @ExceptionHandler(ContractNotCreatedException.class)
-//    public ResponseEntity<ContractErrorResponse> handleContractNotCreatedException(ContractNotCreatedException ex) {
-//        ContractErrorResponse contractErrorResponse = new ContractErrorResponse(ex.getMessage(), System.currentTimeMillis());
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(contractErrorResponse);
-//    }
-
     @ExceptionHandler
-    private ResponseEntity<ContractErrorResponse> handleException(ContractNotFoundException contractNotFoundException){
-        ContractErrorResponse contractErrorResponse = new ContractErrorResponse(
-                "Contract with this id was not found",
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(contractErrorResponse, HttpStatus.NOT_FOUND); // NOT_FOUND - 404
+    private ResponseEntity<HttpStatus> handleException(ContractNotFoundException contractNotFoundException){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @ExceptionHandler
-    private ResponseEntity<ContractErrorResponse> handleException(EntityNotFoundException entityNotFoundException) {
-        // TODO make it better + check borrowerId
-        ContractErrorResponse contractErrorResponse = new ContractErrorResponse(
-                entityNotFoundException.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(contractErrorResponse, HttpStatus.BAD_REQUEST);
-    }
 }

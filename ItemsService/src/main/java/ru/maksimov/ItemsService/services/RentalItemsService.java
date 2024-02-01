@@ -1,20 +1,24 @@
 package ru.maksimov.ItemsService.services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.maksimov.ItemsService.models.RentContract;
+import ru.maksimov.ItemsService.dto.itemDto.ItemDTO;
 import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.repositories.RentalItemsRepository;
+import ru.maksimov.ItemsService.util.MyHelper;
 import ru.maksimov.ItemsService.util.exceptions.ItemNotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class RentalItemsService {
     private final RentalItemsRepository rentalItemsRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public RentalItemsService(RentalItemsRepository rentalItemsRepository) {
@@ -48,10 +52,18 @@ public class RentalItemsService {
     }
 
     @Transactional
-    public void update(int id, RentalItem rentalObject) {
-        rentalObject.setId(id);
-        rentalItemsRepository.save(rentalObject);
+    public RentalItem update(int id, ItemDTO rentalItemUpdates) {
+        RentalItem existingRentalItem = entityManager.find(RentalItem.class, id);
+        if (existingRentalItem == null) {
+            return null; // or throw an exception
+        }
+
+        MyHelper.copyNonNullProperties(rentalItemUpdates, existingRentalItem);
+
+        return entityManager.merge(existingRentalItem);
     }
+
+
     @Transactional
     public void delete(RentalItem rentalObject) {
         rentalItemsRepository.delete(rentalObject);

@@ -49,13 +49,15 @@ psql -U sanan -d users_service_db -c "
     login VARCHAR(50) NOT NULL,
     email VARCHAR(255) UNIQUE,
     phone_number VARCHAR(11),
+    introduce VARCHAR(255),
     created_at TIMESTAMP
     );
 
-    INSERT INTO users(login, email) VALUES ('Aboba','aboba@mail.com');
-    INSERT INTO users(login, email) VALUES ('Tom','tom@mail.com');
-    INSERT INTO users(login, email) VALUES ('Bob', 'bob@mail.com');
-    INSERT INTO users(login, email) VALUES ('Katy', 'katy@mail.com');
+    INSERT INTO users(login, phone_number, introduce, email) VALUES
+    ('Aboba', '81234567890', 'ABOBA TEST USER ','aboba@mail.com'),
+    ('Tom', '80987654321', 'TOM TEST USER', 'tom@mail.com'),
+    ('Bob', '89990001234', 'BOB TEST USER', 'bob@mail.com'),
+    ('Katy', '80001112345', 'KATY TEST USER', 'katy@mail.com');
 "
 
 
