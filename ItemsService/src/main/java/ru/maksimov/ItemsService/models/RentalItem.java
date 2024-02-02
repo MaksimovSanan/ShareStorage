@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RentalItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
@@ -43,4 +44,8 @@ public class RentalItem {
 
     @OneToMany(mappedBy = "rentalItem")
     private List<RentContract> rentContracts;
+
+    public RentalItem(Integer id) {
+        this.id = id;
+    }
 }

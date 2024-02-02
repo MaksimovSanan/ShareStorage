@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RentContract {
-    private int id;
+    private Integer id;
 
     private Item rentalItem;
 

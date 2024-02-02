@@ -50,6 +50,8 @@ public class MainController {
             ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addUserUrl, requestEntity, Void.class);
 
             System.out.println("USER WITH EMAIL: " + principal.getName() + " LOGIN : " + principal.getName() + " WAS ADDED TO RELATION USERS");
+
+            user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
         }
         model.addAttribute("user", user);
         List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items", Item[].class)).toList();

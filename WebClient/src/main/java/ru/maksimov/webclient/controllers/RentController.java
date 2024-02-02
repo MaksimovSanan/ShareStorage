@@ -89,7 +89,7 @@ public class RentController {
 
         HttpEntity<NewRentContract> requestEntity = new HttpEntity<>(newRentContract, headers);
 
-        ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addContractUrl, requestEntity, Void.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(addContractUrl, requestEntity, String.class);
 
         System.out.println("New RentContract was added to db: " + newRentContract);
         return "redirect:/item/" + newRentContract.getRentalItemId();
