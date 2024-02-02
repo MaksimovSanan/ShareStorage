@@ -12,6 +12,10 @@ cd ItemsService
 ./mvnw clean package
 cd ..
 
+cd Aggregator
+./mvnw clean package
+cd ..
+
 cd authorization-server
 ./mvnw clean package
 cd ..

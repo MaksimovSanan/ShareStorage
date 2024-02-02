@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.maksimov.webclient.models.Item;
 import ru.maksimov.webclient.models.RentContract;
 import ru.maksimov.webclient.models.User;
+import ru.maksimov.webclient.models.UserInfo;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -28,27 +29,43 @@ public class UsersController {
 
     @GetMapping("/{id}")
     public String getUserInfo(@PathVariable("id") int id, Model model, Principal principal){
-        User user = restTemplate.getForObject("http://USERSSERVICE/users/" + id, User.class);
-        model.addAttribute("user", user);
 
-        // TODO UserNotFoundPage
-        assert user != null;
+        User visitor = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
 
-        if(user.getEmail().equals(principal.getName())) {
-            model.addAttribute("role", "owner");
-        } else {
-            model.addAttribute("role", "guest");
-        }
+        UserInfo userInfo =restTemplate.getForObject(
+                "http://AGGREGATOR/aggregator/user-info?userId=" + id + "&visitorId=" + visitor.getId(),
+                UserInfo.class
+        );
+
+//        User user = restTemplate.getForObject("http://USERSSERVICE/users/" + id, User.class);
+//        model.addAttribute("user", user);
+        model.addAttribute("user", userInfo.getUser());
+
+//         TODO UserNotFoundPage
+//        assert user != null;
+
+//        if(user.getEmail().equals(principal.getName())) {
+//            model.addAttribute("role", "owner");
+//        } else {
+//            model.addAttribute("role", "guest");
+//        }
+
+        model.addAttribute("role", userInfo.getRole());
 
 
-        List<Item> items = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
-                "http://ITEMSSERVICE/items?ownerId=" + id, Item[].class)
-        )).toList();
-        model.addAttribute("userItems", items);
-        List<RentContract> rentContracts = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
-                "http://ITEMSSERVICE/rent?borrowerId=" + id + "&ownerId=" + id, RentContract[].class)
-        )).toList();
-        model.addAttribute("rentContracts", rentContracts);
+//        List<Item> items = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
+//                "http://ITEMSSERVICE/items?ownerId=" + id, Item[].class)
+//        )).toList();
+//        model.addAttribute("userItems", items);
+
+        model.addAttribute("userItems", userInfo.getUserItems());
+
+//        List<RentContract> rentContracts = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
+//                "http://ITEMSSERVICE/rent?borrowerId=" + id + "&ownerId=" + id, RentContract[].class)
+//        )).toList();
+//        model.addAttribute("rentContracts", rentContracts);
+
+        model.addAttribute("rentContracts", userInfo.getUserRentContracts());
         return "users/userInfo";
     }
 
