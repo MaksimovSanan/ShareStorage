@@ -44,15 +44,15 @@ public class RentController {
             rentContracts = rentContractsService.findAll();
         }
 
-        if (rentContracts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else {
+//        if (rentContracts.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        } else {
             return ResponseEntity.ok(
                     rentContracts.stream()
                             .map(this::convertToDTO)
                             .collect(Collectors.toList())
                     );
-        }
+//        }
     }
 
     @GetMapping("/{id}")
