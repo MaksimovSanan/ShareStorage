@@ -14,6 +14,12 @@
 ```plaintext
 RESTApp/
 │
+├── Aggregator
+│   └── src/
+│       └── main/
+│           ├── java/
+│           └── resources/
+│
 ├── EurekaServer
 │   ├── src/
 │   │   └── main/
@@ -60,16 +66,11 @@ RESTApp/
 └── docker-compose.yml
 ```
 
-- `UsersService/src/`: Содержит исходный код микросервиса для работы с пользователями.
-- `UsersService/Dockerfile.UsersService`: Dockerfile для создания образа UsersService.
+- `Aggregator/`: Составной микросервис инкапсулирует в себе сбор всего запроса с клиента, сбор данных с отдельных миросервисов и предоставление необходимого ответа.
+- `UsersService/`: Микросервис инкапсулирующий в себе логику работы с пользователями
 - `UsersService/UsersServicePostgreSQL/`: Содержит файлы инициализации базы данных PostgreSQL для UsersService.
-- `UsersService/UsersServicePostgreSQL/Dockerfile.UsersServicePostgreSQL`: Dockerfile для создания образа PostgreSQL.
-- `UsersService/UsersServicePostgreSQL/init.sql`: SQL-скрипт для создания схемы базы данных и вставки начальных данных.
-- `ItemsService/src/`: Содержит исходный код микросервиса для работы с товарами.
-- `itemsService/Dockerfile.ItemsService`: Dockerfile для создания образа ItemsService.
+- `ItemsService/`: Микросервис инкапсулирующий в себе логику работы с товарами.
 - `ItemsService/ItemsServicePostgreSQL/`: Содержит файлы инициализации базы данных PostgreSQL для ItemsService.
-- `ItemsService/ItemsServicePostgreSQL/Dockerfile.ItemsServicePostgreSQL`: Dockerfile для создания образа PostgreSQL.
-- `ItemsService/ItemsServicePostgreSQL/init.sql`: SQL-скрипт для создания схемы базы данных и вставки начальных данных.
 - `docker-compose.yml`: Файл конфигурации Docker Compose для оркестрации развертывания обоих контейнеров.
 
 ## UsersService

@@ -17,6 +17,10 @@
             color: greenyellow;
         }
 
+        .requested {
+            color: blue;
+        }
+
         .item-info {
             background-color: #f8f9fa;
             padding: 10px;
@@ -52,10 +56,10 @@
                 <div>
                     <h1 class="card-title" th:text="${itemInfo.item.title}"></h1>
                     <p class="card-text"><strong>Status:</strong>
-                        <span th:text="${itemInfo.item.status == 1 ? 'Reserved' : 'Not Reserved'}"
-                              th:class="${itemInfo.item.status == 1 ? 'reserved' : 'not-reserved'}"></span>
+                        <span th:text="${itemInfo.item.status == 1 ? 'Reserved' : (itemInfo.item.status == 0 ? 'In stock' : 'You have already sent a request')}"
+                              th:class="${itemInfo.item.status == 1 ? 'reserved' : (itemInfo.item.status == 0 ? 'not-reserved' : 'requested')}"></span>
                     </p>
-                    <div th:if="${itemInfo.item.status == 0}" class="action-buttons">
+                    <div th:if="${itemInfo.item.status == 0 && itemInfo.access != 'owner'}" class="action-buttons">
                         <a th:href="@{'/item/' + ${itemInfo.item.id} + '/rent'}" class="btn btn-success">Rent Item</a>
                     </div>
                 </div>
@@ -92,7 +96,7 @@
                     <th>Reserved From</th>
                     <th>Reserved To</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th th:if="${itemInfo.access == 'owner'}">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -112,8 +116,9 @@
                         <span th:text="${contract.reservedToTimeFromForm}"></span>
                     </td>
                     <td>
-                        <span th:if="${contract.status == 201}">open</span>
-                        <span th:if="${contract.status == 202}">closed</span>
+                        <span th:if="${contract.status == 201}" class="text-success">open</span>
+                        <span th:if="${contract.status == 202}" class="text-danger">closed</span>
+                        <span th:if="${contract.status == 205}" class="text-info">request</span>
                     </td>
                     <td>
                         <a th:if="${itemInfo.access == 'owner'}" th:href="@{'/rent/' + ${contract.id}}" class="btn btn-primary">View Contract</a>
