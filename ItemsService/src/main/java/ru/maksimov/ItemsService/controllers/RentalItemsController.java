@@ -54,6 +54,7 @@ public class RentalItemsController {
         return ResponseEntity.ok(convertToItemDTO(rentalItemsService.findById(id)));
     }
 
+
     @Transactional
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid NewItemDTO newItemDTO,
@@ -103,6 +104,9 @@ public class RentalItemsController {
         }
         return ResponseEntity.ok(convertToItemDTO(updatedRentalItem));
     }
+
+
+
 
     private ItemDTO convertToItemDTO(RentalItem rentalItem) {
         return modelMapper.map(rentalItem, ItemDTO.class);

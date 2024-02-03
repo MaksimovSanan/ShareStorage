@@ -1,6 +1,9 @@
-package ru.maksimov.webclient.models;
+package ru.maksimov.webclient.dto;
 
 import lombok.*;
+import ru.maksimov.webclient.models.Item;
+import ru.maksimov.webclient.models.RentContract;
+import ru.maksimov.webclient.models.User;
 
 import java.util.List;
 
@@ -10,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfo {
-    private String role;
+    private String access;
     private User user;
     private List<Item> userItems;
     private List<RentContract> userRentContracts;

@@ -33,6 +33,7 @@ public class RentController {
 
     @GetMapping
     public ResponseEntity<List<RentContractDTO>> findAll(
+            @RequestParam(name = "itemId", required = false) Integer itemId,
             @RequestParam(name = "borrowerId", required = false) Integer borrowerId,
             @RequestParam(name = "ownerId", required = false) Integer ownerId) {
 
@@ -40,6 +41,8 @@ public class RentController {
 
         if (borrowerId != null || ownerId != null) {
             rentContracts = rentContractsService.findAllByOwnerIdOrBorrowerId(borrowerId, ownerId);
+        } else if (itemId != null){
+            rentContracts = rentContractsService.findByRentalItemItemId(itemId);
         } else {
             rentContracts = rentContractsService.findAll();
         }
@@ -113,9 +116,13 @@ public class RentController {
         return ResponseEntity.ok(convertToDTO(updatedRentContract));
     }
 
+
+
+
     private RentContractDTO convertToDTO(RentContract rentContract) {
         return modelMapper.map(rentContract, RentContractDTO.class);
     }
+
     @ExceptionHandler
     private ResponseEntity<HttpStatus> handleException(ContractNotFoundException contractNotFoundException){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

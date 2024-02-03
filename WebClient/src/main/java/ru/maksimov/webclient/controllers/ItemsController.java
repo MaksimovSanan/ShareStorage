@@ -9,26 +9,48 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import ru.maksimov.webclient.dto.ItemInfo;
+import ru.maksimov.webclient.dto.UserInfo;
 import ru.maksimov.webclient.models.Item;
 import ru.maksimov.webclient.models.NewRentContract;
+import ru.maksimov.webclient.models.RentContract;
 import ru.maksimov.webclient.models.User;
+import ru.maksimov.webclient.util.PrincipalHelper;
 
 import java.security.Principal;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/item")
 public class ItemsController {
     private final RestTemplate restTemplate;
+    private final PrincipalHelper principalHelper;
 
     @Autowired
-    public ItemsController(RestTemplate restTemplate) {
+    public ItemsController(RestTemplate restTemplate, PrincipalHelper principalHelper) {
         this.restTemplate = restTemplate;
+        this.principalHelper = principalHelper;
     }
 
     @GetMapping("/{id}")
-    public String getItemInfo(@PathVariable("id") int id, Model model) {
-        Item item = restTemplate.getForObject("http://ITEMSSERVICE/items/" + id, Item.class);
-        model.addAttribute("item", item);
+    public String getItemInfo(@PathVariable("id") int id, Principal principal, Model model) {
+
+        User visitor = principalHelper.getUser(principal);
+
+        ItemInfo itemInfo =restTemplate.getForObject(
+                "http://AGGREGATOR/aggregator/item/" + id + "?visitorId=" + visitor.getId(),
+                ItemInfo.class
+        );
+
+        // TODO
+        // SHIT
+        assert itemInfo != null;
+        if(itemInfo.getRentContracts() != null) {
+            itemInfo.setRentContracts(itemInfo.getRentContracts().stream().peek(RentContract::convertDateToString).collect(Collectors.toList()));
+        }
+
+        model.addAttribute("itemInfo", itemInfo);
+
         return "items/itemInfo";
     }
 

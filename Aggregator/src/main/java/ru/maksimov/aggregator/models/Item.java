@@ -24,4 +24,5 @@ public class Item {
     private Integer costPerHour;
 
     private Integer costPerDay;
+
 }

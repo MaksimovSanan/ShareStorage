@@ -11,20 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RentContract {
     private Integer id;
-
     private Item rentalItem;
-
     private Integer borrowerId;
-
+    private String borrowerName;
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime reservedFrom;
-
     private LocalDateTime reservedTo;
-
     private String comment;
-
     private Integer status;
 }

@@ -12,20 +12,13 @@ import java.time.LocalDateTime;
 @Setter
 public class RentContractDTO {
     private Integer id;
-
     private ItemDTO rentalItem;
-
     private Integer borrowerId;
-
+    private String borrowerName;
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime reservedFrom;
-
     private LocalDateTime reservedTo;
-
     private String comment;
-
     private Integer status;
 }

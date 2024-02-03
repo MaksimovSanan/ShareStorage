@@ -9,9 +9,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class ItemInfo {
     private String access;
-    private User user;
-    private List<Item> userItems;
-    private List<RentContract> userRentContracts;
+    private Item item;
+    private List<RentContract> rentContracts;
 }

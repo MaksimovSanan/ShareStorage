@@ -10,6 +10,7 @@ import ru.maksimov.webclient.models.Item;
 import ru.maksimov.webclient.models.NewRentContract;
 import ru.maksimov.webclient.models.RentContract;
 import ru.maksimov.webclient.models.User;
+import ru.maksimov.webclient.util.PrincipalHelper;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -18,10 +19,12 @@ import java.time.LocalDateTime;
 @RequestMapping("/rent")
 public class RentController {
     private final RestTemplate restTemplate;
+    private final PrincipalHelper principalHelper;
 
     @Autowired
-    public RentController(RestTemplate restTemplate) {
+    public RentController(RestTemplate restTemplate, PrincipalHelper principalHelper) {
         this.restTemplate = restTemplate;
+        this.principalHelper = principalHelper;
     }
 
     @GetMapping("/{id}")
@@ -77,9 +80,11 @@ public class RentController {
                 )
         );
 
-        User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
+//        User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
+        User user = principalHelper.getUser(principal);
 
         newRentContract.setBorrowerId(user.getId());
+        newRentContract.setBorrowerName(user.getLogin());
 
         String addContractUrl = "http://ITEMSSERVICE/rent";
 

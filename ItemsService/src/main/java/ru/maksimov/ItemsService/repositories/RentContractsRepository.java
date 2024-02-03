@@ -15,4 +15,6 @@ public interface RentContractsRepository extends JpaRepository<RentContract, Int
 
     @Query("SELECT rc FROM RentContract rc WHERE rc.rentalItem.ownerId = :ownerId OR rc.borrowerId = :borrowerId")
     List<RentContract> findAllByOwnerIdOrBorrowerId(@Param("ownerId") Integer ownerId, @Param("borrowerId") Integer borrowerId);
+
+    List<RentContract> findByRentalItemId(Integer itemId);
 }
