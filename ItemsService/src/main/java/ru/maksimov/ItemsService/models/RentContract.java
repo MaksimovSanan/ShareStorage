@@ -23,6 +23,9 @@ public class RentContract {
     @Column(name = "borrower_id")
     private Integer borrowerId;
 
+    @Column(name = "borrower_name")
+    private String borrowerName;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

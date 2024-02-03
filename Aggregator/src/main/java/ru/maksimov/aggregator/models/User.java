@@ -1,4 +1,4 @@
-package ru.maksimov.webclient.models;
+package ru.maksimov.aggregator.models;
 
 
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private Integer id;
+    private int id;
     private String login;
     private String email;
     private String phoneNumber;

@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.maksimov.ItemsService.dto.rentContractDto.RentContractDTO;
 import ru.maksimov.ItemsService.models.RentContract;
-import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.repositories.RentContractsRepository;
 import ru.maksimov.ItemsService.util.MyHelper;
-import ru.maksimov.ItemsService.util.RentCodes;
 import ru.maksimov.ItemsService.util.exceptions.ContractNotFoundException;
 
 import java.time.LocalDateTime;
@@ -34,6 +32,9 @@ public class RentContractsService {
         return rentContractsRepository.findAll();
     }
 
+    public List<RentContract> findByRentalItemItemId(Integer itemId) {
+        return rentContractsRepository.findByRentalItemId(itemId);
+    }
     public RentContract findById(int id) {
         return rentContractsRepository.findById(id).orElseThrow(ContractNotFoundException::new);
     }

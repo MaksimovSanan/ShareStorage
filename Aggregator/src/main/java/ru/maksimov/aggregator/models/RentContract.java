@@ -1,18 +1,17 @@
-package ru.maksimov.ItemsService.dto.rentContractDto;
+package ru.maksimov.aggregator.models;
 
 import lombok.*;
-import ru.maksimov.ItemsService.dto.itemDto.ItemDTO;
 
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class RentContractDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class RentContract {
     private Integer id;
-    private ItemDTO rentalItem;
+    private Item rentalItem;
     private Integer borrowerId;
     private String borrowerName;
     private LocalDateTime createdAt;

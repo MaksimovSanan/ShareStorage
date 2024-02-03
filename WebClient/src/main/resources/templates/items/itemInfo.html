@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:util="urn:java:util">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${item.title}"></title>
+    <title th:text="${itemInfo.item.title}"></title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS -->
@@ -44,47 +45,85 @@
 </head>
 <body>
 <div class="container mt-5">
-    <a href="/" class="btn btn-secondary mb-3">Back to Home</a> <!-- Перемещенная кнопка "Back to Home" -->
+    <a href="/" class="btn btn-secondary mb-3">Back to Home</a>
     <div class="card">
         <div class="card-body">
-            <!-- Блок с названием и статусом предмета -->
             <div class="item-info vertical-align-middle">
                 <div>
-                    <h1 class="card-title" th:text="${item.title}"></h1> <!-- Заголовок с названием предмета -->
+                    <h1 class="card-title" th:text="${itemInfo.item.title}"></h1>
                     <p class="card-text"><strong>Status:</strong>
-                        <span th:text="${item.status == 1 ? 'Reserved' : 'Not Reserved'}"
-                              th:class="${item.status == 1 ? 'reserved' : 'not-reserved'}"></span>
-                        <!-- Добавленная кнопка для аренды вещи -->
-                    <div th:if="${item.status == 0}" class="action-buttons">
-                        <a th:href="@{'/item/' + ${item.id} + '/rent'}" class="btn btn-success">Rent Item</a>
-                    </div>
+                        <span th:text="${itemInfo.item.status == 1 ? 'Reserved' : 'Not Reserved'}"
+                              th:class="${itemInfo.item.status == 1 ? 'reserved' : 'not-reserved'}"></span>
                     </p>
+                    <div th:if="${itemInfo.item.status == 0}" class="action-buttons">
+                        <a th:href="@{'/item/' + ${itemInfo.item.id} + '/rent'}" class="btn btn-success">Rent Item</a>
+                    </div>
                 </div>
-                <!-- Блок с информацией о владельце -->
                 <div class="ml-auto owner-info">
-                    <p><strong>Owner:</strong> <span th:text="${item.ownerName}"></span></p>
-                    <a th:href="@{'/user/' + ${item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
+                    <p><strong>Owner:</strong> <span th:text="${itemInfo.item.ownerName}"></span></p>
+                    <a th:href="@{'/user/' + ${itemInfo.item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
                 </div>
             </div>
-            <!-- Логический блок с описанием предмета -->
             <div class="item-info">
                 <h5>Description:</h5>
-                <p class="card-text" th:text="${item.description}"></p>
-                <p class="card-text"><strong>Cost Per Hour:</strong> <span th:text="${item.costPerHour}"></span></p>
-                <p class="card-text"><strong>Cost Per Day:</strong> <span th:text="${item.costPerDay}"></span></p>
+                <p class="card-text" th:text="${itemInfo.item.description}"></p>
+                <p class="card-text"><strong>Cost Per Hour:</strong> <span th:text="${itemInfo.item.costPerHour}"></span></p>
+                <p class="card-text"><strong>Cost Per Day:</strong> <span th:text="${itemInfo.item.costPerDay}"></span></p>
             </div>
-            <!-- Блок с кнопками действий -->
-            <div class="action-buttons">
-                <a th:href="@{'/item/' + ${item.id} + '/edit'}" class="btn btn-info">Edit Item</a>
-                <!-- Кнопка для удаления элемента -->
-                <form th:action="@{'/item/' + ${item.id}}" method="post" style="display: inline;">
+            <div class="action-buttons" th:if="${itemInfo.access == 'owner'}">
+                <a th:href="@{'/item/' + ${itemInfo.item.id} + '/edit'}" class="btn btn-info">Edit Item</a>
+                <form th:action="@{'/item/' + ${itemInfo.item.id}}" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
                     <input type="hidden" name="_method" value="DELETE"/>
-                    <!-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> -->
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Display rent contracts -->
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Rent Contracts</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Contract ID</th>
+                    <th>Borrower name</th>
+                    <th>Reserved From</th>
+                    <th>Reserved To</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="contract : ${itemInfo.rentContracts}" th:if="${itemInfo.access == 'owner' || contract.status == 201 || contract.status == 202}">
+                    <td th:text="${contract.id}"></td>
+                    <td>
+                        <a th:text="${contract.borrowerName}" th:href="@{'/user/' + ${contract.borrowerId}}">Borrower login</a>
+                    </td>
+                    <td>
+                        <span th:text="${contract.reservedFromDateFromForm}"></span>
+                        <span> </span>
+                        <span th:text="${contract.reservedFromTimeFromForm}"></span>
+                    </td>
+                    <td>
+                        <span th:text="${contract.reservedToDateFromForm}"></span>
+                        <span> </span>
+                        <span th:text="${contract.reservedToTimeFromForm}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${contract.status == 201}">open</span>
+                        <span th:if="${contract.status == 202}">closed</span>
+                    </td>
+                    <td>
+                        <a th:if="${itemInfo.access == 'owner'}" th:href="@{'/rent/' + ${contract.id}}" class="btn btn-primary">View Contract</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 <!-- Bootstrap JS and jQuery (required for Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
