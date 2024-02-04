@@ -94,7 +94,6 @@ public class ItemsController {
 
     @PatchMapping("/{id}")
     public String updateItem(@PathVariable("id") int id, @ModelAttribute Item item){
-        System.out.println(item);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .contracts-info {
             background-color: #f0f0f0;
@@ -38,9 +39,18 @@
         .about-me-text {
             padding-left: 16px; /* Отступ слева для текста */
         }
+        .go-home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
     </style>
 </head>
 <body>
+
+<h2>User Avatar for User ID: ${userInfo.user.id}</h2>
+<img src="data:image/jpeg;base64,${userInfo.user.avatarBase64}" alt="User Avatar">
+
 <div class="container mt-5 position-relative">
     <button onclick="window.history.back()" class="btn btn-secondary btn-top-right">Back</button>
     <div class="d-flex justify-content-between align-items-center edit-btn">
@@ -48,9 +58,10 @@
         <h2>
             <span th:text="${userInfo.user.login}"></span>
             <span class="small-text-login">(ID = <span th:text="${userInfo.user.id}"></span>)</span>
-            <button th:if="${userInfo.access == 'owner'}" class="btn btn-primary btn-sm">Edit</button>
+            <a th:if="${userInfo.access == 'owner'}" th:href="@{'/user/' + ${userInfo.user.id} + '/edit'}" class="btn btn-primary btn-sm">Edit</a>
         </h2>
     </div>
+    <img th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar">
     <!-- Отображение email и phoneNumber некрупным шрифтом -->
     <p><span>Email: </span><span th:text="${userInfo.user.email}" class="text-muted"></span></p>
     <p><span>Phone Number: </span><span th:text="${userInfo.user.phoneNumber}" class="text-muted"></span></p>
@@ -134,6 +145,8 @@
         </div>
     </div>
 </div>
+<!-- Кнопка для перехода на главную страницу -->
+<a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

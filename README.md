@@ -93,7 +93,7 @@ RESTApp/
 Работаю над запуском с помощью docker-compose.
 Пока запустить получится только на локалке.
 Для этого придется создать таблицы postgres самостоятельно и задать переменные в application.properties в модулях security-server, itemsservice, usersservice.
-После чего последовательно запустить eurekaserver, itemsservice, usersservice, security-server, webclient.
+После чего последовательно запустить eurekaserver, itemsservice, usersservice, aggregator, security-server, webclient.
 # :(
 
 ### P.S.S:

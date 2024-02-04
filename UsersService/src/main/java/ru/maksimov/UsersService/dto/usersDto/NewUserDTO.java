@@ -17,5 +17,7 @@ public class NewUserDTO {
     @Email
     @NotEmpty(message = "Email should not be empty")
     private String email;
+    private String phoneNumber;
+    private String introduce;
 
 }

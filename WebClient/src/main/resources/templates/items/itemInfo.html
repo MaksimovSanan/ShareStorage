@@ -7,6 +7,7 @@
     <title th:text="${itemInfo.item.title}"></title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Custom CSS -->
     <style>
         .reserved {
@@ -40,16 +41,22 @@
             align-items: center;
         }
 
+
         @media (max-width: 576px) {
             .vertical-align-middle {
                 flex-direction: column;
             }
         }
+
+        .go-home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-5">
-    <a href="/" class="btn btn-secondary mb-3">Back to Home</a>
     <div class="card">
         <div class="card-body">
             <div class="item-info vertical-align-middle">
@@ -130,6 +137,9 @@
     </div>
 
 </div>
+<!-- Кнопка для перехода на главную страницу -->
+<a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
+
 <!-- Bootstrap JS and jQuery (required for Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
