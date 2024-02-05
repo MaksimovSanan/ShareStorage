@@ -45,6 +45,9 @@ public class RentContractsService {
 
     @Transactional
     public void save(RentContract rentContract) {
+        if(rentContract.getRentalItem().getId().equals(rentContract.getBorrowerId())) {
+            throw new RuntimeException("Operation not supported");
+        }
         enrichContract(rentContract);
         rentContractsRepository.save(rentContract);
     }

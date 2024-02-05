@@ -2,6 +2,7 @@ package ru.maksimov.webclient.models;
 
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Getter
@@ -14,4 +15,6 @@ public class User {
     private String email;
     private String phoneNumber;
     private String introduce;
+    private byte[] avatar;
 }
+

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .user-info,
         .contracts-info {
             background-color: #f0f0f0;
             padding: 20px;
@@ -21,38 +21,113 @@
         .edit-btn {
             margin-bottom: 10px;
         }
+        .small-text-login {
+            font-size: 0.5em;
+        }
+        .about-me-block {
+            position: relative;
+        }
+        .about-me-line {
+            position: absolute;
+            top: 0;
+            left: -8px;
+            width: 4px;
+            height: 100%;
+            background-color: #17a2b8;
+            border-radius: 0 2px 2px 0;
+        }
+        .about-me-text {
+            padding-left: 16px;
+        }
+        .go-home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .avatar-img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
 <div class="container mt-5 position-relative">
     <button onclick="window.history.back()" class="btn btn-secondary btn-top-right">Back</button>
+    <div class="d-flex justify-content-between align-items-center edit-btn">
+        <h2>
+            <span th:text="${userInfo.user.login}"></span>
+            <span class="small-text-login">(ID = <span th:text="${userInfo.user.id}"></span>)</span>
+            <a th:if="${userInfo.access == 'owner'}" th:href="@{'/user/' + ${userInfo.user.id} + '/edit'}" class="btn btn-primary btn-sm">Edit</a>
+        </h2>
+    </div>
+    <!-- Аватар пользователя -->
+    <div class="avatar-container">
+        <img th:if="${base64Avatar != null}" th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar" class="avatar-img">
+        <i th:unless="${base64Avatar != null}" class="fas fa-user-circle fa-5x"></i>
+    </div>
+    <p><span>Email: </span><span th:text="${userInfo.user.email}" class="text-muted"></span></p>
+    <p><span>Phone Number: </span><span th:text="${userInfo.user.phoneNumber}" class="text-muted"></span></p>
+    <div class="about-me-block mt-3 p-3 bg-light">
+        <div class="about-me-line">&nbsp;</div>
+        <div class="about-me-text pl-3">
+            <h4 class="mb-2">About Me:</h4>
+            <p th:text="${userInfo.user.introduce}" class="lead"></p>
+        </div>
+    </div>
+    <div class="user-items">
+        <h3>Items:</h3>
+        <ul>
+            <li th:each="item : ${userInfo.userItems}">
+                <a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a>
+                <span th:if="${item.status == 0}" class="text-success">Available</span>
+                <span th:if="${item.status == 1}" class="text-danger">Rented</span>
+            </li>
+        </ul>
+    </div>
     <div class="row">
-        <!-- Блок с информацией о пользователе -->
-        <div class="col-md-6 user-info" th:if="${userInfo != null}">
-            <div class="d-flex justify-content-between align-items-center edit-btn">
-                <h2 th:text="${userInfo.user.login}">User Login</h2>
-                <button class="btn btn-primary">Edit</button>
+        <div class="col-md-6 contracts-info">
+            <h2>Sharing History</h2>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Reserved From</th>
+                            <th>Reserved To</th>
+                            <th>Status</th>
+                            <th th:if="${userInfo.access == 'owner'}">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="contract : ${userInfo.userRentContracts}">
+                            <td>
+                                <a th:text="${contract.borrowerName}" th:href="@{'/user/' + ${contract.borrowerId}}">View Profile</a>
+                            </td>
+                            <td>
+                                <span th:text="${contract.reservedFrom}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${contract.reservedTo}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${contract.status == 201}" class="text-success">Open</span>
+                                <span th:if="${contract.status == 202}" class="text-danger">Closed</span>
+                                <span th:if="${contract.status == 205}" class="text-info">Request</span>
+                            </td>
+                            <td>
+                                <a th:if="${userInfo.access == 'owner'}" th:href="@{'/rent/' + ${contract.id}}" class="btn btn-primary btn-sm">View Contract</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <p>ID: <span th:text="${userInfo.user.id}"></span></p>
-            <p>Email: <span th:text="${userInfo.user.email}"></span></p>
         </div>
     </div>
     <div class="row">
-        <!-- Блок с Sharing History -->
-        <div class="col-md-6 contracts-info" th:if="${userInfo != null and not #lists.isEmpty(userInfo.userRentContracts)}">
-            <h2>Sharing history</h2>
-            <ul>
-                <li th:each="contract : ${userInfo.userRentContracts}" th:if="${contract.status == 201 or contract.status == 202}">
-                    <span class="contract-link" th:text="${contract.rentalItem.title}" th:attr="data-item-id=${contract.rentalItem.id}"></span> - Reserved to: <span th:text="${contract.reservedTo}"></span>
-                    <a th:href="'/rent/' + ${contract.id}" class="btn btn-primary btn-sm">View</a>
-                </li>
-                <li th:unless="${userInfo.userRentContracts.![status].contains(201) or userInfo.userRentContracts.![status].contains(202)}">No rent contracts found.</li>
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <!-- Блок с requests for rent (для владельца) -->
-        <div class="col-md-6 contracts-info" th:if="${userInfo != null and userInfo.access == 'owner' and not #lists.isEmpty(userInfo.userRentContracts)}">
+        <div class="col-md-6 contracts-info">
             <h2>Requests for sharing</h2>
             <ul>
                 <li th:each="contract : ${userInfo.userRentContracts}" th:if="${contract.status == 205 and contract.rentalItem.ownerId == userInfo.user.id}">
@@ -64,6 +139,7 @@
         </div>
     </div>
 </div>
+<a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.maksimov.aggregator.models.*;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +29,22 @@ public class AggregatorService {
         User user;
         try {
             user = restTemplate.getForObject("http://USERSSERVICE/users/" + userId, User.class);
+
+            try {
+                ResponseEntity<byte[]> response = restTemplate.getForEntity("http://IMAGESERVER/user-image/" + userId, byte[].class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    byte[] avatarBytes = response.getBody();
+                    user.setAvatar(avatarBytes);
+                    String avatarBase64 = Base64.getEncoder().encodeToString(avatarBytes);
+//                user.setAvatarBase64(avatarBase64); // добавление строки Base64 в объект пользователя
+                } else {
+                    user.setAvatar(null);
+                }
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+
         } catch (Exception e) {
             return null;
         }
@@ -36,6 +53,7 @@ public class AggregatorService {
 //        if(user == null) {
 //            return null;
 //        }
+
 
         String role = userId == visitorId? "owner" : "guest";
 
