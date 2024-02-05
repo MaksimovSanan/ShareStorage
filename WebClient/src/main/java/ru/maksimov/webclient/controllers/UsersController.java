@@ -37,7 +37,6 @@ public class UsersController {
     @GetMapping("/{id}")
     public String getUserInfo(@PathVariable("id") int id, Model model, Principal principal){
 
-//        User visitor = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
         User visitor = principalHelper.getUser(principal);
 
         UserInfo userInfo =restTemplate.getForObject(
@@ -48,35 +47,13 @@ public class UsersController {
 //         TODO UserNotFoundPage
         assert userInfo != null;
 
-        // Получение аватара пользователя из ImageServer
-
-        String base64Avatar = null;
-
-        try {
-            ResponseEntity<byte[]> response = restTemplate.getForEntity("http://IMAGESERVER/user-image/" + id, byte[].class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            byte[] avatarBytes = response.getBody();
-            userInfo.getUser().setAvatar(avatarBytes);
-            String avatarBase64 = Base64.getEncoder().encodeToString(avatarBytes);
-            userInfo.getUser().setAvatarBase64(avatarBase64); // добавление строки Base64 в объект пользователя
+        String base64Avatar;
+        if(userInfo.getUser().getAvatar() != null) {
             base64Avatar = Base64.getEncoder().encodeToString(userInfo.getUser().getAvatar());
         } else {
-            // Обработка ситуации, когда аватар не найден
-            // Например, установка дефолтного аватара или вывод ошибки
-            }
-        } catch(Exception e) {
-            System.out.println(e);
+            base64Avatar = null;
         }
-
-
-
-
-//        String base64Avatar = Base64.getEncoder().encodeToString(userInfo.getUser().getAvatar());
-
-        // Add base64Avatar to the model
         model.addAttribute("base64Avatar", base64Avatar);
-
         model.addAttribute("userInfo", userInfo);
         return "users/userInfo";
     }
@@ -138,21 +115,6 @@ public class UsersController {
         }
         return "redirect:/user/" + id;
     }
-
-
-//    public String getUserAvatar(@PathVariable Integer userId, Model model) {
-//        String url = "http://your-user-image-service-url/user-image/" + userId;
-//
-//        // Получаем аватарку пользователя
-//        ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
-//        byte[] imageBytes = response.getBody();
-//
-//        // Передаем данные в модель для отображения на странице
-//        model.addAttribute("userId", userId);
-//        model.addAttribute("image", new ByteArrayResource(imageBytes));
-//
-//        return "avatar-page"; // Вернуть имя представления, где будет отображаться аватарка
-//    }
 
 
 

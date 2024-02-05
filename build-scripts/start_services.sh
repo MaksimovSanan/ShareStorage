@@ -2,6 +2,7 @@
 java -jar EurekaServer/target/EurekaServer-0.0.1-SNAPSHOT.jar &
 java -jar ItemsService/target/ItemsService-0.0.1-SNAPSHOT.jar &
 java -jar UsersService/target/UsersService-0.0.1-SNAPSHOT.jar &
+java -jar ImageServer/target/ImageServer-0.0.1-SNAPSHOT.jar &
 java -jar Aggregator/target/Aggregator-0.0.1-SNAPSHOT.jar &
 
 # Запуск сервера авторизации

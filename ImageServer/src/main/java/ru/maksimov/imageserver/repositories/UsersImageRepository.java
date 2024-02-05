@@ -5,9 +5,10 @@ import org.springframework.stereotype.Repository;
 import ru.maksimov.imageserver.models.UserImage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UsersImageRepository extends JpaRepository<UserImage, Integer> {
 
-    UserImage findByUserId(Integer userId);
+    Optional<UserImage> findByUserId(Integer userId);
 }

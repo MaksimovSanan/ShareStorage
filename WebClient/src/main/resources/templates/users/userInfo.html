@@ -22,62 +22,59 @@
             margin-bottom: 10px;
         }
         .small-text-login {
-            font-size: 0.5em; /* Размер шрифта в 50% от основного размера */
+            font-size: 0.5em;
         }
         .about-me-block {
-            position: relative; /* Относительное позиционирование для содержимого */
+            position: relative;
         }
         .about-me-line {
-            position: absolute; /* Абсолютное позиционирование для полосы */
+            position: absolute;
             top: 0;
-            left: -8px; /* Смещение полосы влево */
-            width: 4px; /* Ширина полосы */
-            height: 100%; /* Высота полосы */
-            background-color: #17a2b8; /* Цвет полосы */
-            border-radius: 0 2px 2px 0; /* Скругление углов справа */
+            left: -8px;
+            width: 4px;
+            height: 100%;
+            background-color: #17a2b8;
+            border-radius: 0 2px 2px 0;
         }
         .about-me-text {
-            padding-left: 16px; /* Отступ слева для текста */
+            padding-left: 16px;
         }
         .go-home-btn {
             position: absolute;
             top: 10px;
             left: 10px;
         }
+        .avatar-img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
-
-<h2>User Avatar for User ID: ${userInfo.user.id}</h2>
-<img src="data:image/jpeg;base64,${userInfo.user.avatarBase64}" alt="User Avatar">
-
 <div class="container mt-5 position-relative">
     <button onclick="window.history.back()" class="btn btn-secondary btn-top-right">Back</button>
     <div class="d-flex justify-content-between align-items-center edit-btn">
-        <!-- Отображение login пользователя и id -->
         <h2>
             <span th:text="${userInfo.user.login}"></span>
             <span class="small-text-login">(ID = <span th:text="${userInfo.user.id}"></span>)</span>
             <a th:if="${userInfo.access == 'owner'}" th:href="@{'/user/' + ${userInfo.user.id} + '/edit'}" class="btn btn-primary btn-sm">Edit</a>
         </h2>
     </div>
-    <img th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar">
-    <!-- Отображение email и phoneNumber некрупным шрифтом -->
+    <!-- Аватар пользователя -->
+    <div class="avatar-container">
+        <img th:if="${base64Avatar != null}" th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar" class="avatar-img">
+        <i th:unless="${base64Avatar != null}" class="fas fa-user-circle fa-5x"></i>
+    </div>
     <p><span>Email: </span><span th:text="${userInfo.user.email}" class="text-muted"></span></p>
     <p><span>Phone Number: </span><span th:text="${userInfo.user.phoneNumber}" class="text-muted"></span></p>
-
-    <!-- Блок About Me с более крупным шрифтом и стилизацией -->
     <div class="about-me-block mt-3 p-3 bg-light">
-        <!-- Голубая полоса слева от текста -->
         <div class="about-me-line">&nbsp;</div>
-        <!-- Текст с небольшим отступом -->
         <div class="about-me-text pl-3">
             <h4 class="mb-2">About Me:</h4>
             <p th:text="${userInfo.user.introduce}" class="lead"></p>
         </div>
     </div>
-
-    <!-- Добавляем новый блок для списка предметов пользователя -->
     <div class="user-items">
         <h3>Items:</h3>
         <ul>
@@ -85,13 +82,11 @@
                 <a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a>
                 <span th:if="${item.status == 0}" class="text-success">Available</span>
                 <span th:if="${item.status == 1}" class="text-danger">Rented</span>
-                <!-- Добавьте другие возможные статусы здесь -->
             </li>
         </ul>
     </div>
-    <!-- Display rent contracts -->
     <div class="row">
-        <div class="col-md-6 contracts-info" th:if="${userInfo != null and not #lists.isEmpty(userInfo.userRentContracts)}">
+        <div class="col-md-6 contracts-info">
             <h2>Sharing History</h2>
             <div class="card mt-3">
                 <div class="card-body">
@@ -132,8 +127,7 @@
         </div>
     </div>
     <div class="row">
-        <!-- Блок с requests for rent (для владельца) -->
-        <div class="col-md-6 contracts-info" th:if="${userInfo != null and userInfo.access == 'owner' and not #lists.isEmpty(userInfo.userRentContracts)}">
+        <div class="col-md-6 contracts-info">
             <h2>Requests for sharing</h2>
             <ul>
                 <li th:each="contract : ${userInfo.userRentContracts}" th:if="${contract.status == 205 and contract.rentalItem.ownerId == userInfo.user.id}">
@@ -145,7 +139,6 @@
         </div>
     </div>
 </div>
-<!-- Кнопка для перехода на главную страницу -->
 <a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

@@ -15,7 +15,6 @@ public class User {
     private String email;
     private String phoneNumber;
     private String introduce;
-    private byte[] avatar; // изменение типа поля на byte[]
-    private String avatarBase64;
+    private byte[] avatar;
 }
 

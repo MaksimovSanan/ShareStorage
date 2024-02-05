@@ -12,6 +12,10 @@ cd ItemsService
 ./mvnw clean package
 cd ..
 
+cd ImageServer
+./mvnw clean package
+cd ..
+
 cd Aggregator
 ./mvnw clean package
 cd ..
