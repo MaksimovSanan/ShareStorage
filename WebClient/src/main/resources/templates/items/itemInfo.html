@@ -74,13 +74,31 @@
                     <p><strong>Owner:</strong> <span th:text="${itemInfo.item.ownerName}"></span></p>
                     <a th:href="@{'/user/' + ${itemInfo.item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
                 </div>
+
             </div>
+
             <div class="item-info">
                 <h5>Description:</h5>
                 <p class="card-text" th:text="${itemInfo.item.description}"></p>
-                <p class="card-text"><strong>Cost Per Hour:</strong> <span th:text="${itemInfo.item.costPerHour}"></span></p>
-                <p class="card-text"><strong>Cost Per Day:</strong> <span th:text="${itemInfo.item.costPerDay}"></span></p>
             </div>
+
+            <!-- Изображения -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="mt-3">Photos:</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-columns">
+                        <div th:each="picture : ${base64Picture}" class="card">
+                            <img th:if="${picture != null}" th:src="'data:image/png;base64,' + ${picture}" alt="Item Image" class="card-img-top">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="action-buttons" th:if="${itemInfo.access == 'owner'}">
                 <a th:href="@{'/item/' + ${itemInfo.item.id} + '/edit'}" class="btn btn-info">Edit Item</a>
                 <form th:action="@{'/item/' + ${itemInfo.item.id}}" method="post" style="display: inline;">

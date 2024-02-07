@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("user-image")
@@ -42,9 +43,15 @@ public class UsersImageController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<byte[]> getUserImage(@PathVariable Integer userId) {
+
+//        1 |       1 | /Users/sanan/prog0.1/Java/Trash/ShareStorage/ImageServer/src/main/resources/static/users/user_1_picForShareStorageAvaSanan.jpg
+//        2 |       2 | /Users/sanan/prog0.1/Java/Trash/ShareStorage/ImageServer/src/main/resources/static/users/user_2_picForShareStorageAvaVlada.jpeg
+//        3 |       3 | /Users/sanan/prog0.1/Java/Trash/ShareStorage/ImageServer/src/main/resources/static/users/user_3_picForShareStorageAvaTolya.avif
+
+        String pathToUsersImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/users/";
         UserImage userImage = usersImageService.getUserImage(userId);
 
-        File file = new File(userImage.getUserImagePath());
+        File file = new File(pathToUsersImageDir + userImage.getUserImagePath());
         try {
             FileInputStream inputStream = new FileInputStream(file);
             byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);

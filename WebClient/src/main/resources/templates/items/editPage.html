@@ -1,33 +1,48 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User Profile</title>
+    <title>Edit Item</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Add your custom styles here */
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Edit User Profile</h2>
-    <form th:action="@{'/users/' + ${user.id}}" method="post">
-        <input type="hidden" name="_method" value="PATCH">
+    <h1>Edit Item</h1>
+    <form th:action="@{'/item/' + ${item.id}}" method="post"  enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="PATCH"/>
+        <input type="hidden" name="ownerId" th:value="${item.ownerId}"/>
+        <input type="hidden" name="ownerName" th:value="${item.ownerName}"/>
         <div class="form-group">
-            <label for="login">Login:</label>
-            <input type="text" class="form-control" id="login" name="login" th:value="${user.login}" readonly>
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" id="title" name="title" th:value="${item.title}">
         </div>
         <div class="form-group">
-            <label for="phoneNumber">Phone Number:</label>
-            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" name="description" rows="4" th:text="${item.description}"></textarea>
         </div>
         <div class="form-group">
-            <label for="introduce">Introduction:</label>
-            <textarea class="form-control" id="introduce" name="introduce" rows="4" th:text="${user.introduce}"></textarea>
+            <label for="status">Status:</label>
+            <select class="form-control" id="status" name="status">
+                <option value="1" th:selected="${item.status == 1}">Reserved</option>
+                <option value="0" th:selected="${item.status == 0}">Not Reserved</option>
+            </select>
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <!-- Поле для загрузки новой картинки -->
+        <div class="form-group">
+            <label for="photo">Upload Picture:</label>
+            <input type="file" class="form-control-file" id="photo" name="photo">
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+<!-- Bootstrap JS and jQuery (required for Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

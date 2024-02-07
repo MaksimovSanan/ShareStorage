@@ -34,31 +34,29 @@
 <div class="container mt-5">
     <h1>Ads</h1>
     <!-- Кнопка для добавления нового товара -->
-    <a class="btn btn-primary mb-3" href="/item/new">Add New Item</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a class="btn btn-primary" href="/item/new">Add New Item</a>
+        <!-- Кнопка для перехода на страницу ассоциаций -->
+        <a class="btn btn-success" href="/groups">Associations</a>
+    </div>
     <table class="table">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Owner</th>
             <th>Title</th>
             <th>Description</th>
             <th>Status</th>
-            <th>Cost Per Hour</th>
-            <th>Cost Per Day</th>
+            <th>Owner</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${items}">
-            <td th:text="${item.id}"></td>
-            <td><a th:href="@{'/user/' + ${item.ownerId}}" th:text="${item.ownerName}"></a></td>
             <td><a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a></td>
             <td th:text="${item.description}"></td>
             <td>
                 <span th:if="${item.status == 1}">Reserved</span>
                 <span th:if="${item.status != 1}">Not Reserved</span>
             </td>
-            <td th:text="${item.costPerHour}"></td>
-            <td th:text="${item.costPerDay}"></td>
+            <td><a th:href="@{'/user/' + ${item.ownerId}}" th:text="${item.ownerName}"></a></td>
         </tr>
         </tbody>
     </table>

@@ -117,6 +117,12 @@ RESTApp/
 
 5. Доступ к приложению: http://localhost:8081/
 
+   Users:
+
+   smak_simov@mail.ru:password
+   yshkin@yandex.ru:password
+   gazeta@gmail.com:qwerty0123   
+
 6. Остановка работы приложения:
    ```bash
    sh build-scripts/stop_services.sh 

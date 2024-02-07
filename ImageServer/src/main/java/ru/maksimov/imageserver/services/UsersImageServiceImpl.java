@@ -31,30 +31,29 @@ public class UsersImageServiceImpl implements UsersImageService{
         String fileName = "user_" + userId + "_" + newUserFile.getOriginalFilename();
         String filePath = pathToUsersImageDir + fileName;
 
-        // Сохраняем файл на диск
-        File dest = new File(filePath);
-        newUserFile.transferTo(dest);
-
         Optional<UserImage> userImage = usersImageRepository.findByUserId(userId);
         if(userImage.isPresent()) {
 
-            File file = new File(userImage.get().getUserImagePath());
+            File file = new File(pathToUsersImageDir + userImage.get().getUserImagePath());
             boolean deleted = file.delete();
 
             if (deleted) {
-                userImage.get().setUserImagePath(filePath);
+                userImage.get().setUserImagePath(fileName);
                 usersImageRepository.save(userImage.get());
             } else {
                 System.out.println("Не удалось удалить файл.");
             }
         }
         else {
-            // Сохраняем путь к файлу в базу данных
             UserImage newUserImage = new UserImage();
             newUserImage.setUserId(userId);
             newUserImage.setUserImagePath(filePath);
             usersImageRepository.save(newUserImage);
         }
+
+        // Сохраняем файл на диск
+        File dest = new File(filePath);
+        newUserFile.transferTo(dest);
     }
 
     @Override

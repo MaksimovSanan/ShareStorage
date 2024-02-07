@@ -36,7 +36,6 @@ public class AggregatorService {
                 if (response.getStatusCode() == HttpStatus.OK) {
                     byte[] avatarBytes = response.getBody();
                     user.setAvatar(avatarBytes);
-                    String avatarBase64 = Base64.getEncoder().encodeToString(avatarBytes);
 //                user.setAvatarBase64(avatarBase64); // добавление строки Base64 в объект пользователя
                 } else {
                     user.setAvatar(null);

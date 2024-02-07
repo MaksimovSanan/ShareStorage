@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import ru.maksimov.webclient.models.Item;
+import ru.maksimov.webclient.models.NewUser;
 import ru.maksimov.webclient.models.User;
 import ru.maksimov.webclient.dto.UserInfo;
 import ru.maksimov.webclient.util.PrincipalHelper;
@@ -73,14 +74,12 @@ public class UsersController {
     @PatchMapping("/{id}")
     public String editUser(@PathVariable("id") int id,
                            @RequestParam("avatar") MultipartFile avatar,
-                           @ModelAttribute @Valid User user,
-                           BindingResult result){
-        System.out.println(user);
+                           @ModelAttribute NewUser user){
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<User> requestEntity = new HttpEntity<>(user, headers);
+            HttpEntity<NewUser> requestEntity = new HttpEntity<>(user, headers);
 
             restTemplate.patchForObject("http://USERSSERVICE/users/" + id, requestEntity, Void.class);
         } catch(Exception e) {
@@ -88,27 +87,28 @@ public class UsersController {
         }
 
         try {
+            if (avatar != null && !avatar.isEmpty()) { // Проверяем, был ли загружен новый файл аватарки
+                String url = "http://IMAGESERVER/user-image/" + id;
 
-            String url = "http://IMAGESERVER/user-image/" + user.getId();
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("file", avatar.getResource());
 
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", avatar.getResource());
+                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                ResponseEntity<String> response = restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        requestEntity,
+                        String.class);
 
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("User image uploaded successfully!");
-            } else {
-                System.out.println("Failed to upload user image.");
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    System.out.println("User image uploaded successfully!");
+                } else {
+                    System.out.println("Failed to upload user image.");
+                }
             }
         } catch(Exception e) {
                 System.out.println(e.getMessage());

@@ -1,14 +1,16 @@
 package ru.maksimov.webclient.controllers;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import ru.maksimov.webclient.dto.ItemInfo;
 import ru.maksimov.webclient.dto.UserInfo;
 import ru.maksimov.webclient.models.Item;
@@ -18,6 +20,9 @@ import ru.maksimov.webclient.models.User;
 import ru.maksimov.webclient.util.PrincipalHelper;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -49,6 +54,27 @@ public class ItemsController {
             itemInfo.setRentContracts(itemInfo.getRentContracts().stream().peek(RentContract::convertDateToString).collect(Collectors.toList()));
         }
 
+        List<String> base64Picture = new ArrayList<>();
+        try {
+            ResponseEntity<List<byte[]>> response = restTemplate.exchange(
+                    "http://IMAGESERVER/item-image/" + id,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<byte[]>>() {});
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<byte[]> pictures = response.getBody();
+                for (byte[] picture : pictures) {
+                    base64Picture.add(Base64.getEncoder().encodeToString(picture));
+                }
+            } else {
+                base64Picture = null;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        model.addAttribute("base64Picture", base64Picture);
         model.addAttribute("itemInfo", itemInfo);
 
         return "items/itemInfo";
@@ -93,7 +119,9 @@ public class ItemsController {
     }
 
     @PatchMapping("/{id}")
-    public String updateItem(@PathVariable("id") int id, @ModelAttribute Item item){
+    public String updateItem(@PathVariable("id") int id,
+                             @RequestParam("photo") MultipartFile photo,
+                             @ModelAttribute Item item){
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -101,6 +129,36 @@ public class ItemsController {
         HttpEntity<Item> requestEntity = new HttpEntity<>(item, headers);
 
         restTemplate.patchForObject("http://ITEMSSERVICE/items/" + id, requestEntity, Void.class);
+
+
+        try {
+            if (photo != null && !photo.isEmpty()) {
+                String url = "http://IMAGESERVER/item-image/" + id;
+
+                HttpHeaders headers2 = new HttpHeaders();
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("file", photo.getResource());
+
+                HttpEntity<MultiValueMap<String, Object>> requestEntity2 = new HttpEntity<>(body, headers2);
+
+                ResponseEntity<String> response = restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        requestEntity2,
+                        String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    System.out.println("Item image uploaded successfully!");
+                } else {
+                    System.out.println("Failed to upload item image.");
+                }
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
         return "redirect:/";
     }
 
