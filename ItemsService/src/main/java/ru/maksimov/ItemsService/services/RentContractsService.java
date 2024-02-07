@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.maksimov.ItemsService.dto.rentContractDto.RentContractDTO;
 import ru.maksimov.ItemsService.models.RentContract;
+import ru.maksimov.ItemsService.models.RentalItem;
 import ru.maksimov.ItemsService.repositories.RentContractsRepository;
+import ru.maksimov.ItemsService.util.ItemCodes;
 import ru.maksimov.ItemsService.util.MyHelper;
 import ru.maksimov.ItemsService.util.exceptions.ContractNotFoundException;
 
@@ -45,7 +47,9 @@ public class RentContractsService {
 
     @Transactional
     public void save(RentContract rentContract) {
-        if(rentContract.getRentalItem().getId().equals(rentContract.getBorrowerId())) {
+        RentalItem rentalItem = rentalItemsService.findById(rentContract.getRentalItem().getId());
+        if(rentalItem.getStatus() != ItemCodes.free ||
+                rentalItem.getOwnerId().equals(rentContract.getBorrowerId())) {
             throw new RuntimeException("Operation not supported");
         }
         enrichContract(rentContract);
