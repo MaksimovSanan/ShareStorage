@@ -56,6 +56,9 @@ psql -U sanan -c "CREATE DATABASE users_service_db;"
 # Выполнение SQL-скрипта
 psql -U sanan -d users_service_db -c "
     DROP TABLE IF EXISTS users CASCADE;
+    DROP TABLE IF EXISTS groups CASCADE;
+    DROP TABLE IF EXISTS groups_users CASCADE;
+    DROP TABLE IF EXISTS requests_for_membership CASCADE;
 
     CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
@@ -72,7 +75,24 @@ psql -U sanan -d users_service_db -c "
         ('Casper', 'gazeta@gmail.com', '77777777777', 'Vsem piece!', CURRENT_TIMESTAMP),
         ('yshkin@yandex.ru', 'yshkin@yandex.ru', NULL, 'Я КСТА Тоже JAVA DEVELOPER. tg:@N0vaT', CURRENT_TIMESTAMP);
 
+    CREATE TABLE IF NOT EXISTS groups (
+      group_id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      title VARCHAR(255),
+      owner_id INTEGER REFERENCES users(user_id) NOT NULL
+    );
 
+    CREATE TABLE IF NOT EXISTS groups_users(
+      user_id INTEGER REFERENCES users(user_id) NOT NULL,
+      group_id INTEGER REFERENCES groups(group_id) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS requests_for_membership(
+      request_id SERIAL PRIMARY KEY,
+      group_id INTEGER REFERENCES groups(group_id) NOT NULL,
+      user_id INTEGER REFERENCES users(user_id) NOT NULL,
+      message VARCHAR(255)
+    );
 "
 
 

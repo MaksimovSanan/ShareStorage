@@ -1,5 +1,7 @@
 package ru.maksimov.UsersService.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -42,6 +44,18 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonBackReference
+    private List<Group> createdGroups;
+
+    @ManyToMany(mappedBy = "members")
+    @JsonBackReference
+    private List<Group> GroupsMember;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<RequestForMembership> requestsForMembership;
 
     public User(String login,String email) {
         this.login = login;
