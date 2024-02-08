@@ -14,9 +14,10 @@ import ru.maksimov.UsersService.models.User;
 import ru.maksimov.UsersService.services.GroupsService;
 import ru.maksimov.UsersService.services.RequestsService;
 import ru.maksimov.UsersService.services.UsersService;
+import ru.maksimov.UsersService.util.exceptions.GroupNotFoundException;
+import ru.maksimov.UsersService.util.exceptions.RequestNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/groups")
@@ -44,11 +45,8 @@ public class GroupsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Group> findById(@PathVariable("id") int id) {
-        Optional<Group> group = groupsService.findById(id);
-        if(group.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(group.get());
+        Group group = groupsService.findById(id);
+        return ResponseEntity.ok(group);
     }
 
     @PostMapping
@@ -57,39 +55,65 @@ public class GroupsController {
                                              BindingResult bindingResult
                                               ) {
         Group group = modelMapper.map(newGroupDTO, Group.class);
-        User user = new User();
-        user.setId(userId);
-        group.setOwner(user);
+        User owner = usersService.findById(userId);
+        group.setOwner(owner);
+        group.addMember(owner);
         try {
-            group = groupsService.createGroup(group);
+            group = groupsService.saveGroup(group);
         }
         catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
         return ResponseEntity.ok(group);
     }
 
 
-    @GetMapping("/{id}/requests")
-    public ResponseEntity<List<RequestForMembership>> getRequests(@PathVariable("id") int groupId,
+    @GetMapping("/{groupId}/requests")
+    public ResponseEntity<List<RequestForMembership>> getRequests(@PathVariable("groupId") int groupId,
                                                                   @RequestParam(name = "visitorId") int visitorId,
                                                                   @RequestParam(name = "message", required = false) String message) {
-        Optional<Group> group = groupsService.findById(groupId);
+        Group group = groupsService.findById(groupId);
         User visitor = usersService.findById(visitorId);
 
-        // NEED TO THROWS EXCEPTIONS IN SERVICES!!!
-        if(group.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(group.getOwner().getId().equals(visitorId)){
+            List<RequestForMembership> requests = requestsService.requestsForGroup(groupId);
+            return ResponseEntity.ok(requests);
         }
         else {
-            if(group.get().getOwner().getId().equals(visitorId)){
-                List<RequestForMembership> requests = requestsService.requestsForGroup(groupId);
-                return ResponseEntity.ok(requests);
-            }
-            else {
-                RequestForMembership requestForMembership = requestsService.sendRequest(group.get(), visitor, message);
-                return ResponseEntity.ok(List.of(requestForMembership));
-            }
+            RequestForMembership requestForMembership = requestsService.sendRequest(group, visitor, message);
+            return ResponseEntity.ok(List.of(requestForMembership));
         }
+    }
+
+    @GetMapping("/{groupId}/requests/{requestId}")
+    public ResponseEntity<RequestForMembership> confirmRequest(@PathVariable("groupId") int groupId,
+                                                               @PathVariable("requestId") int requestId,
+                                                               @RequestParam(name = "visitorId") int visitorId) {
+        List<RequestForMembership> requests = requestsService.requestsForGroup(groupId);
+        RequestForMembership request = requestsService.findById(requestId);
+        if(requests.contains(request)) {
+            Group group = request.getGroup();
+            User user = request.getUser();
+            group.addMember(user);
+            groupsService.saveGroup(group);
+            user.addGroup(group);
+            usersService.update(user.getId(), user);
+            requestsService.deleteRequest(request);
+            return ResponseEntity.ok(request);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<HttpStatus> handleException(GroupNotFoundException groupNotFoundException){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<HttpStatus> handleException(RequestNotFoundException requestNotFoundException){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

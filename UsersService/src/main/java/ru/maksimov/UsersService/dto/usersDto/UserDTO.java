@@ -5,6 +5,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 import ru.maksimov.UsersService.models.Group;
+import ru.maksimov.UsersService.models.RequestForMembership;
 
 import java.util.List;
 
@@ -20,4 +21,5 @@ public class UserDTO {
     private List<Group> createdGroups;
 
     private List<Group> GroupsMember;
+    private List<RequestForMembership> requestsForMembership;
 }

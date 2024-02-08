@@ -1,10 +1,10 @@
 package ru.maksimov.UsersService.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,19 +50,23 @@ public class User {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "owner")
-    @JsonBackReference
     private List<Group> createdGroups;
 
     @ManyToMany(mappedBy = "members")
-    @JsonBackReference
-    private List<Group> GroupsMember;
+    private List<Group> groupsMember;
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
     private List<RequestForMembership> requestsForMembership;
 
     public User(String login,String email) {
         this.login = login;
         this.email = email;
+    }
+
+    public void addGroup(Group group) {
+        if(groupsMember == null) {
+            groupsMember = new ArrayList<>();
+        }
+        groupsMember.add(group);
     }
 }

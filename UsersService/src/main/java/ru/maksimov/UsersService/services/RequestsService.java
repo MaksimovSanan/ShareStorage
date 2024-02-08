@@ -6,6 +6,7 @@ import ru.maksimov.UsersService.models.Group;
 import ru.maksimov.UsersService.models.RequestForMembership;
 import ru.maksimov.UsersService.models.User;
 import ru.maksimov.UsersService.repositories.RequestsRepository;
+import ru.maksimov.UsersService.util.exceptions.RequestNotFoundException;
 
 import java.util.List;
 
@@ -23,8 +24,16 @@ public class RequestsService {
         return requestsRepository.findAll();
     }
 
+    public RequestForMembership findById(int requestId) {
+        return requestsRepository.findById(requestId).orElseThrow(RequestNotFoundException::new);
+    }
+
     public List<RequestForMembership> requestsForGroup(int groupId) {
         return requestsRepository.findAllByGroupId(groupId);
+    }
+
+    public void deleteRequest(RequestForMembership request) {
+        requestsRepository.delete(request);
     }
 
     public List<RequestForMembership> requestsForUser(int userId) {

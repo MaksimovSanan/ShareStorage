@@ -1,6 +1,8 @@
 package ru.maksimov.UsersService.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class RequestForMembership {
     @Id
     @Column(name = "request_id")
@@ -19,12 +24,10 @@ public class RequestForMembership {
 
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "group_id")
-    @JsonManagedReference
     private Group group;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    @JsonManagedReference
     private User user;
 
     @Column(name = "message")

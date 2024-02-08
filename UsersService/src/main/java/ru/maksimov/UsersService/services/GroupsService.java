@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.maksimov.UsersService.models.Group;
 import ru.maksimov.UsersService.repositories.GroupsRepository;
+import ru.maksimov.UsersService.util.exceptions.GroupNotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GroupsService {
@@ -18,7 +18,7 @@ public class GroupsService {
         this.groupsRepository = groupsRepository;
     }
 
-    public Group createGroup(Group group) {
+    public Group saveGroup(Group group) {
         return groupsRepository.save(group);
     }
 
@@ -27,7 +27,7 @@ public class GroupsService {
     }
 
     // maybe make returned value is Group and throw GroupNotFoundException
-    public Optional<Group> findById(int id) {
-        return groupsRepository.findById(id);
+    public Group findById(int id) {
+        return groupsRepository.findById(id).orElseThrow(GroupNotFoundException::new);
     }
 }
