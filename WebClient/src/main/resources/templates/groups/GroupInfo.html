@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Info</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+  <h1>Group Information</h1>
+
+  <!-- Group Details -->
+  <div class="card">
+    <div class="card-header">
+      Group Details
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Group Name: <span th:text="${group.name}"></span></h5>
+      <p class="card-text">Group Title: <span th:text="${group.title}"></span></p>
+      <p class="card-text">Owner: <a th:href="'/user/' + ${group.owner.id}" th:text="${group.owner.login}"></a></p>
+      <!-- Display other group information here -->
+    </div>
+  </div>
+
+  <!-- Group Members -->
+  <div class="card mt-3">
+    <div class="card-header">
+      Group Members
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" th:each="member : ${group.members}">
+        <a th:href="'/user/' + ${member.id}" th:text="${member.login}"></a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Membership Requests (For Owner Only) -->
+  <div th:if="${role == 'owner'}">
+    <div class="card mt-3">
+      <div class="card-header">
+        Membership Requests
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="request : ${group.requests}">
+          <p>User: <span th:text="${request.userId}"></span></p>
+          <p>Message: <span th:text="${request.message}"></span></p>
+          <!-- Display other request information here -->
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Request Membership (For Guests) -->
+  <div th:if="${role == 'guest'}">
+    <form th:action="@{'/sendRequest/' + ${group.id}}" method="post">
+      <div class="form-group">
+        <label for="message">Message:</label>
+        <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Request Membership</button>
+    </form>
+  </div>
+
+  <!-- User's Role in Group -->
+  <div th:if="${role == 'owner'}">
+    <!-- Display buttons for managing group (Edit, Delete, etc.) -->
+    <a href="#" class="btn btn-primary mt-3 mr-2">Edit Group</a>
+    <a href="#" class="btn btn-danger mt-3">Delete Group</a>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

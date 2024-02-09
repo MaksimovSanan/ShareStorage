@@ -2,6 +2,8 @@ package ru.maksimov.webclient.models;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -12,6 +14,8 @@ public class NewUser {
     private String email;
     private String phoneNumber;
     private String introduce;
+
+
 
     public NewUser(String login, String email) {
         this.login = login;

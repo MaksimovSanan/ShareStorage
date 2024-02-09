@@ -13,9 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-//@JsonIdentityInfo(
-//        generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
 public class RequestForMembership {
     @Id
     @Column(name = "request_id")
