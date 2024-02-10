@@ -35,9 +35,12 @@ public class RentalItemsController {
 
     @GetMapping
     public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "ownerId", required = false) Integer ownerId,
-                                  @RequestParam(name = "status", required = false) Integer status) {
+                                  @RequestParam(name = "status", required = false) Integer status,
+                                                  @RequestParam(name = "groupId", required = false) Integer groupId) {
         List<RentalItem> items;
-        if (ownerId != null && status != null) {
+        if(groupId != null) {
+            items = rentalItemsService.findByGroupId(groupId);
+        } else if (ownerId != null && status != null) {
             items = rentalItemsService.findByOwnerIdAndStatus(ownerId, status);
         } else if (ownerId != null) {
             items = rentalItemsService.findByOwnerId(ownerId);
@@ -68,6 +71,7 @@ public class RentalItemsController {
 
         RentalItem rentalItem = convertToItem(newItemDTO);
 
+        System.out.println(rentalItem.getId());
 //        how can i fix it
         rentalItem.setId(null);
 

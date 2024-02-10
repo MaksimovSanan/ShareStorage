@@ -23,8 +23,8 @@ public class AggregatorController {
         this.aggregatorService = aggregatorService;
     }
 
-    @GetMapping("/user-info")
-    public ResponseEntity<UserInfo> getUserInfo(@RequestParam(name = "userId") int userId,
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserInfo> getUserInfo(@PathVariable("id") int userId,
                                                 @RequestParam(name = "visitorId") int visitorId) {
 
         UserInfo userInfo = aggregatorService.getUserInfo(userId, visitorId);

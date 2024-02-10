@@ -110,16 +110,16 @@ psql -U sanan -d items_service_db -c "
         title VARCHAR(100) NOT NULL,
         description VARCHAR(250) NOT NULL,
         status INTEGER NOT NULL,
-        cost_hour INTEGER,
-        cost_day INTEGER
+        group_id INTEGER,
+        group_name VARCHAR(100)
         );
 
-    INSERT INTO rental_items (owner_id, owner_name, title, description, status, cost_hour, cost_day)
+    INSERT INTO rental_items (owner_id, owner_name, title, description, status)
     VALUES
-        (1, 'SANAN', 'Корм для птиц', 'Однажды я нашел на остановке корм для птиц. Он пролежал у меня дома месяца 3, после чего его пришлось выкинуть, потому что не смог найти кому из моих знакомых он нужен', 0, 0, 0),
-        (1, 'SANAN', 'Табуретки ikea', 'Еще у меня на балконе лежат 2 ненужные табуретки(на самом деле не только они)', 0, 0, 0),
-        (2, 'gazeta@gmail.com', 'Газета', 'Взял газету в метро у бабушки. Могу отдать', 0, 0, 0),
-        (3, 'yshkin@yandex.ru', 'Усилитель слуха', 'Прибор рабочий, сам опробовал, 10 из 10', 0, 0, 0);
+        (1, 'SANAN', 'Корм для птиц', 'Однажды я нашел на остановке корм для птиц. Он пролежал у меня дома месяца 3, после чего его пришлось выкинуть, потому что не смог найти кому из моих знакомых он нужен', 0),
+        (1, 'SANAN', 'Табуретки ikea', 'Еще у меня на балконе лежат 2 ненужные табуретки(на самом деле не только они)', 0),
+        (2, 'gazeta@gmail.com', 'Газета', 'Взял газету в метро у бабушки. Могу отдать', 0),
+        (3, 'yshkin@yandex.ru', 'Усилитель слуха', 'Прибор рабочий, сам опробовал, 10 из 10', 0);
 
 
     DROP TABLE IF EXISTS rent_contracts CASCADE;

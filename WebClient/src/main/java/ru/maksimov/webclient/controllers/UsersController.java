@@ -41,7 +41,7 @@ public class UsersController {
         User visitor = principalHelper.getUser(principal);
 
         UserInfo userInfo =restTemplate.getForObject(
-                "http://AGGREGATOR/aggregator/user-info?userId=" + id + "&visitorId=" + visitor.getId(),
+                "http://AGGREGATOR/aggregator/user/" + id + "?visitorId=" + visitor.getId(),
                 UserInfo.class
         );
 

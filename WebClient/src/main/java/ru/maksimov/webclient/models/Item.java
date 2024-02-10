@@ -15,6 +15,6 @@ public class Item {
     private String title;
     private String description;
     private Integer status;
-    private Integer costPerHour;
-    private Integer costPerDay;
+    private String groupId;
+    private String groupName;
 }

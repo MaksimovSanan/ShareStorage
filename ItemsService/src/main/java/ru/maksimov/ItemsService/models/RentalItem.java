@@ -36,11 +36,11 @@ public class RentalItem {
     @Column(name = "status")
     private Integer status;
 
-    @Column(name = "cost_hour")
-    private Integer costPerHour;
+    @Column(name = "group_id")
+    private Integer groupId;
 
-    @Column(name = "cost_day")
-    private Integer costPerDay;
+    @Column(name = "group_name")
+    private String groupName;
 
     @OneToMany(mappedBy = "rentalItem")
     private List<RentContract> rentContracts;

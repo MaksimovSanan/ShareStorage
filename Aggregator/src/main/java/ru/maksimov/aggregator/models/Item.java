@@ -21,8 +21,8 @@ public class Item {
 
     private Integer status;
 
-    private Integer costPerHour;
+    private Integer groupId;
 
-    private Integer costPerDay;
+    private String groupName;
 
 }

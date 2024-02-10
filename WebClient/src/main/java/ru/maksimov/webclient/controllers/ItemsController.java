@@ -95,7 +95,11 @@ public class ItemsController {
     }
 
     @GetMapping("/new")
-    public String newItemPage(@ModelAttribute("item") Item item) {
+    public String newItemPage(@ModelAttribute("item") Item item,
+                              Model model,
+                              Principal principal) {
+        User visitor = principalHelper.getUser(principal);
+        model.addAttribute("groups", visitor.getGroupsMember());
         return "items/newItemPage";
     }
 
@@ -106,7 +110,6 @@ public class ItemsController {
 
         newItem.setOwnerId(user.getId());
         newItem.setOwnerName(user.getLogin());
-        newItem.setId(null);
 
         String addItemUrl = "http://ITEMSSERVICE/items";
 

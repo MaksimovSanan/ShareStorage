@@ -35,17 +35,18 @@
     <h1>Ads</h1>
     <!-- Кнопка для добавления нового товара -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a class="btn btn-primary" href="/item/new">Add New Item</a>
+        <a class="btn btn-primary" href="/item/new">Делитесь!</a>
         <!-- Кнопка для перехода на страницу ассоциаций -->
-        <a class="btn btn-success" href="/groups">Associations</a>
+        <a class="btn btn-success" href="/groups"> Объединяйтесь!</a>
     </div>
     <table class="table">
         <thead>
         <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Owner</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Владелец</th>
+            <th>Объединение</th>
         </tr>
         </thead>
         <tbody>
@@ -54,9 +55,10 @@
             <td th:text="${item.description}"></td>
             <td>
                 <span th:if="${item.status == 1}">Reserved</span>
-                <span th:if="${item.status != 1}">Not Reserved</span>
+                <span th:if="${item.status != 1}">Доступно</span>
             </td>
             <td><a th:href="@{'/user/' + ${item.ownerId}}" th:text="${item.ownerName}"></a></td>
+            <td th:text="${item.groupId} == null ? 'Public' : ${item.groupName}"></td>
         </tr>
         </tbody>
     </table>

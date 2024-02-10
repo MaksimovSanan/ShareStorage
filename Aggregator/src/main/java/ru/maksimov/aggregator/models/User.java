@@ -3,6 +3,8 @@ package ru.maksimov.aggregator.models;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -15,4 +17,9 @@ public class User {
     private String phoneNumber;
     private String introduce;
     private byte[] avatar;
+
+    private List<SimpleGroupDTO> createdGroups;
+
+    private List<SimpleGroupDTO> GroupsMember;
+    private List<RequestDTO> requestsForMembership;
 }

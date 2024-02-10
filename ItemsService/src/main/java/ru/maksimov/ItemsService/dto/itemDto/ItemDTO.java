@@ -1,10 +1,10 @@
 package ru.maksimov.ItemsService.dto.itemDto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemDTO {
     private Integer id;
 
@@ -18,7 +18,6 @@ public class ItemDTO {
 
     private Integer status;
 
-    private Integer costPerHour;
-
-    private Integer costPerDay;
+    private Integer groupId;
+    private String groupName;
 }

@@ -15,9 +15,7 @@ public class NewRentContract {
     private Integer rentalItemId;
     private Integer borrowerId;
     private String borrowerName;
-    @NotNull(message = "Field reservedFrom cannot be empty")
     private LocalDateTime reservedFrom;
-    @NotNull(message = "Field reservedTo cannot be empty")
     private LocalDateTime reservedTo;
     private String comment;
     @NotNull(message = "Status cannot be empty")
