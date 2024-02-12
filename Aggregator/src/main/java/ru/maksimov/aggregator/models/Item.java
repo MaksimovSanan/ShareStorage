@@ -2,6 +2,8 @@ package ru.maksimov.aggregator.models;
 
 import lombok.*;
 
+import java.util.List;
+
 
 @Data
 @Getter
@@ -24,5 +26,7 @@ public class Item {
     private Integer groupId;
 
     private String groupName;
+
+    private List<byte[]> pictures;
 
 }

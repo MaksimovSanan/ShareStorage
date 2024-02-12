@@ -2,20 +2,21 @@ package ru.maksimov.webclient.controllers;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import ru.maksimov.webclient.dto.UserInfo;
+import org.springframework.web.multipart.MultipartFile;
+import ru.maksimov.webclient.dto.GroupInfo;
 import ru.maksimov.webclient.models.*;
 import ru.maksimov.webclient.util.PrincipalHelper;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -40,7 +41,7 @@ public class GroupsControlller {
         )).toList();
 
         model.addAttribute("user", visitor);
-        model.addAttribute("groups", groups);
+        model.addAttribute("allGroups", groups);
 
         return "groups/GroupsPage";
     }
@@ -48,39 +49,34 @@ public class GroupsControlller {
     @GetMapping("/{id}")
     public String getGroupInfo(@PathVariable("id") int id, Principal principal, Model model) {
         User visitor = principalHelper.getUser(principal);
-        Group group = restTemplate.getForObject("http://USERSSERVICE/groups/" + id, Group.class);
+        GroupInfo groupInfo =restTemplate.getForObject(
+                "http://AGGREGATOR/aggregator/group/" + id + "?visitorId=" + visitor.getId(),
+                GroupInfo.class
+        );
+
+//         TODO UserNotFoundPage
+        assert groupInfo != null;
+        String base64Avatar;
+        if(groupInfo.getGroup().getAvatar() != null) {
+            base64Avatar = Base64.getEncoder().encodeToString(groupInfo.getGroup().getAvatar());
+        } else {
+            base64Avatar = null;
+        }
+        model.addAttribute("base64Avatar", base64Avatar);
         model.addAttribute("user", visitor);
-        model.addAttribute("group", group);
-        String role;
-        if(visitor.getId().equals(group.getOwner().getId())) {
-            role = "owner";
-        }
-        else if (visitor.getGroupsMember().contains(group)){
-            role = "member";
-        }
-        else if (visitor.getRequestsForMembership().stream()
-                .filter(requestForMembership -> requestForMembership.getGroupId().equals(group.getId()))
-                .findAny().isPresent()) {
-            role = "guestWithRequest";
-        }
-        else {
-            role = "guest";
-        }
-        model.addAttribute("role", role);
+        model.addAttribute("group", groupInfo.getGroup());
 
-        List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items?groupId=" + id, Item[].class))
-                .toList();
+        model.addAttribute("role", groupInfo.getAccess());
 
-        model.addAttribute("items", items);
+        model.addAttribute("items", groupInfo.getItems());
 
-        model.addAttribute("user", visitor);
         return "groups/GroupInfo";
     }
 
 
     @GetMapping("/new")
     public String newGroupForm(@ModelAttribute(name = "newGroup") NewGroup newGroup) {
-        return "groups/newGroupForm";
+        return "groups/NewGroupForm";
     }
     @PostMapping
     public String createGroup(Principal principal,
@@ -148,5 +144,63 @@ public class GroupsControlller {
                                           Principal principal) {
         // Код для отклонения заявки на вступление в группу
         return "redirect:/groups/" + groupId;
+    }
+
+    @GetMapping("/{id}/edit")
+    public String getEditPage(@PathVariable("id") int id, Principal principal, Model model) {
+        User visitor = principalHelper.getUser(principal);
+        Group group = restTemplate.getForObject("http://USERSSERVICE/groups/" + id, Group.class);
+        if(group.getOwner().getId() != visitor.getId()) {
+            return "errorPage";
+        }
+
+        model.addAttribute("group", group);
+        return "groups/editPage";
+    }
+
+    @PatchMapping("/{id}")
+    public String editUser(@PathVariable("id") int id,
+                           @RequestParam("avatar") MultipartFile avatar,
+                           @ModelAttribute NewGroup newGroup){
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<NewGroup> requestEntity = new HttpEntity<>(newGroup, headers);
+
+            restTemplate.patchForObject("http://USERSSERVICE/groups/" + id, requestEntity, Void.class);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // upload avatar code absolutely like upload avatar for user, mv need to make util class for upload multipartfile
+        try {
+            if (avatar != null && !avatar.isEmpty()) { // Проверяем, был ли загружен новый файл аватарки
+                String url = "http://IMAGESERVER/group-image/" + id;
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+                MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                body.add("file", avatar.getResource());
+
+                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+                ResponseEntity<String> response = restTemplate.exchange(
+                        url,
+                        HttpMethod.POST,
+                        requestEntity,
+                        String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    System.out.println("Group image uploaded successfully!");
+                } else {
+                    System.out.println("Failed to upload group image.");
+                }
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return "redirect:/groups/" + id;
     }
 }

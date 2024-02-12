@@ -48,4 +48,5 @@ public class RentalItem {
     public RentalItem(Integer id) {
         this.id = id;
     }
+
 }

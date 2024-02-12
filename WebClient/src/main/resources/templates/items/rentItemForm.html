@@ -44,15 +44,24 @@
         <input type="hidden" id="rentalItemId" name="rentalItemId" th:value="${item.id}"/>
         <!-- Скрытое поле для передачи значения status -->
         <input type="hidden" id="status" name="status" th:value="205"/>
+
         <div class="form-group">
-            <label for="reservedFromDateFromForm">Reserved From Date:</label>
-            <input type="date" class="form-control" id="reservedFromDateFromForm" name="reservedFromDateFromForm" th:value="${#dates.format(newRentContract.reservedFrom, 'yyyy-MM-dd')}" required/>
-        </div>
-        <div class="form-group">
-            <label for="reservedToDateFromForm">Reserved To Date:</label>
-            <input type="date" class="form-control" id="reservedToDateFromForm" name="reservedToDateFromForm" th:value="${#dates.format(newRentContract.reservedTo, 'yyyy-MM-dd')}" required/>
+            <label for="comment">Напишите коментарий владельцу:</label>
+            <textarea class="form-control" id="comment" name="comment" th:value="${newRentContract.comment}"></textarea>
         </div>
         <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="specificDateCheckbox" name="specificDateCheckbox">
+            <label class="form-check-label" for="specificDateCheckbox">Specify Date</label>
+        </div>
+        <div class="form-group specific-date-fields" style="display:none;">
+            <label for="reservedFromDateFromForm">Reserved From Date:</label>
+            <input type="date" class="form-control" id="reservedFromDateFromForm" name="reservedFromDateFromForm" th:value="${#dates.format(newRentContract.reservedFrom, 'yyyy-MM-dd')}"/>
+        </div>
+        <div class="form-group specific-date-fields" style="display:none;">
+            <label for="reservedToDateFromForm">Reserved To Date:</label>
+            <input type="date" class="form-control" id="reservedToDateFromForm" name="reservedToDateFromForm" th:value="${#dates.format(newRentContract.reservedTo, 'yyyy-MM-dd')}"/>
+        </div>
+        <div class="form-group form-check specific-date-fields" style="display:none;">
             <input type="checkbox" class="form-check-input" id="specificTimeCheckbox" name="specificTimeCheckbox">
             <label class="form-check-label" for="specificTimeCheckbox">Specify Time</label>
         </div>
@@ -63,10 +72,6 @@
         <div class="form-group specific-time-fields" style="display:none;">
             <label for="reservedToTimeFromForm">Reserved To Time:</label>
             <input type="time" class="form-control" id="reservedToTimeFromForm" name="reservedToTimeFromForm" th:value="${#dates.format(newRentContract.reservedTo, 'HH:mm')}"/>
-        </div>
-        <div class="form-group">
-            <label for="comment">Comment:</label>
-            <textarea class="form-control" id="comment" name="comment" th:value="${newRentContract.comment}"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -85,6 +90,17 @@
                 $('.specific-time-fields').show();
             } else {
                 $('.specific-time-fields').hide();
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        $('#specificDateCheckbox').change(function(){
+            if(this.checked) {
+                $('.specific-date-fields').show();
+            } else {
+                $('.specific-date-fields').hide();
             }
         });
     });

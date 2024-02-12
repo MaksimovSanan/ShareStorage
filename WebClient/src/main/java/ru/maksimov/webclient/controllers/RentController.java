@@ -58,27 +58,33 @@ public class RentController {
     }
 
     @PostMapping("/submitRentContract")
-    public String submitRent(@ModelAttribute NewRentContract newRentContract, Principal principal){
+    public String submitRent(@ModelAttribute NewRentContract newRentContract, Principal principal) {
 
+        if (newRentContract.getReservedFromDateFromForm().isEmpty() && newRentContract.getReservedToDateFromForm().isEmpty()) {
+            newRentContract.setReservedFrom(null);
+            newRentContract.setReservedTo(null);
+        }
         // MDA TRASH..
-        newRentContract.setReservedFrom(
-                LocalDateTime.parse(
-                        newRentContract.getReservedFromDateFromForm() + "T" +
-                                (newRentContract.getReservedFromTimeFromForm().isEmpty() ?
-                                        "23:59":
-                                        newRentContract.getReservedFromTimeFromForm()
-                                )
-                )
-        );
-        newRentContract.setReservedTo(
-                LocalDateTime.parse(
-                        newRentContract.getReservedToDateFromForm() + "T" +
-                                (newRentContract.getReservedToTimeFromForm().isEmpty()?
-                                        "23:59":
-                                        newRentContract.getReservedToTimeFromForm()
-                                )
-                )
-        );
+        else {
+            newRentContract.setReservedFrom(
+                    LocalDateTime.parse(
+                            newRentContract.getReservedFromDateFromForm() + "T" +
+                                    (newRentContract.getReservedFromTimeFromForm().isEmpty() ?
+                                            "23:59" :
+                                            newRentContract.getReservedFromTimeFromForm()
+                                    )
+                    )
+            );
+            newRentContract.setReservedTo(
+                    LocalDateTime.parse(
+                            newRentContract.getReservedToDateFromForm() + "T" +
+                                    (newRentContract.getReservedToTimeFromForm().isEmpty() ?
+                                            "23:59" :
+                                            newRentContract.getReservedToTimeFromForm()
+                                    )
+                    )
+            );
+        }
 
 //        User user = restTemplate.getForObject("http://USERSSERVICE/users/0?email=" + principal.getName(), User.class);
         User user = principalHelper.getUser(principal);

@@ -44,4 +44,15 @@ public class AggregatorController {
         }
         return ResponseEntity.ok(itemInfo);
     }
+
+    @GetMapping("group/{id}")
+    public ResponseEntity<GroupInfo> getGroupInfo(@PathVariable("id") int groupId,
+                                                @RequestParam(name = "visitorId") int visitorId) {
+
+        GroupInfo gRoupInfo = aggregatorService.getGroupInfo(groupId, visitorId);
+        if(gRoupInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(gRoupInfo);
+    }
 }

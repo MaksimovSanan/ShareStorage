@@ -1,6 +1,8 @@
 package ru.maksimov.aggregator.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+
 
 @Service
 public class AggregatorService {
@@ -30,13 +33,13 @@ public class AggregatorService {
         try {
             user = restTemplate.getForObject("http://USERSSERVICE/users/" + userId, User.class);
 
+            // upload user photo
             try {
                 ResponseEntity<byte[]> response = restTemplate.getForEntity("http://IMAGESERVER/user-image/" + userId, byte[].class);
 
                 if (response.getStatusCode() == HttpStatus.OK) {
                     byte[] avatarBytes = response.getBody();
                     user.setAvatar(avatarBytes);
-//                user.setAvatarBase64(avatarBase64); // добавление строки Base64 в объект пользователя
                 } else {
                     user.setAvatar(null);
                 }
@@ -85,10 +88,27 @@ public class AggregatorService {
 //        if(item == null) {
 //            return null;
 //        }
+
+        // get images for item
+        try {
+            ResponseEntity<List<byte[]>> response = restTemplate.exchange(
+                    "http://IMAGESERVER/item-image/" + itemId,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<byte[]>>() {});
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                item.setPictures(response.getBody());
+            } else {
+                item.setPictures(null);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         itemInfo.setItem(item);
 
 
-
+        // get rentContracts for item
         List<RentContract> rentContracts = Arrays.stream(Objects.requireNonNull(restTemplate.getForObject(
                 "http://ITEMSSERVICE/rent?itemId=" + itemId, RentContract[].class)
         )).toList();
@@ -106,5 +126,50 @@ public class AggregatorService {
         }
 
         return itemInfo;
+    }
+
+    public GroupInfo getGroupInfo(Integer groupId, Integer visitorId) {
+        Group group;
+        User visitor;
+        try {
+            group = restTemplate.getForObject("http://USERSSERVICE/groups/" + groupId, Group.class);
+            // upload group photo
+            try {
+                ResponseEntity<byte[]> response = restTemplate.getForEntity("http://IMAGESERVER/group-image/" + groupId, byte[].class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    byte[] avatarBytes = response.getBody();
+                    group.setAvatar(avatarBytes);
+                } else {
+                    group.setAvatar(null);
+                }
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+            visitor =  restTemplate.getForObject("http://USERSSERVICE/users/" + visitorId, User.class);
+        } catch(Exception e) {
+            return null;
+        }
+        String role;
+        if(visitor.getId().equals(group.getOwner().getId())) {
+            role = "owner";
+        }
+        else if (visitor.getGroupsMember().stream().filter(simpleGroupDTO -> simpleGroupDTO.getId().equals(group.getId()))
+                .findAny().isPresent()){
+            role = "member";
+        }
+        else if (visitor.getRequestsForMembership().stream()
+                .filter(requestForMembership -> requestForMembership.getGroupId().equals(group.getId()))
+                .findAny().isPresent()) {
+            role = "guestWithRequest";
+        }
+        else {
+            role = "guest";
+        }
+
+        List<Item> items = Arrays.stream(restTemplate.getForObject("http://ITEMSSERVICE/items?groupId=" + groupId, Item[].class))
+                .toList();
+
+        return new GroupInfo(role, group, items);
     }
 }

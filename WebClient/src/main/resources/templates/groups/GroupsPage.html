@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groups Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .group-card {
+            margin-bottom: 20px;
+        }
+        .go-home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-3">Groups Page</h1>
+
+
+    <!-- Your Created Groups -->
+    <h2>Созданные вами группы</h2>
+    <div class="row" th:if="${user.createdGroups == null or #lists.isEmpty(user.createdGroups)}">
+        <p>У вас нет созданных групп.</p>
+    </div>
+    <div class="row" th:unless="${user.createdGroups == null or #lists.isEmpty(user.createdGroups)}">
+        <div th:each="group : ${user.createdGroups}" class="col-md-4">
+            <div class="card group-card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${group.name}"></h5>
+                    <p class="card-text" th:text="${group.title}"></p>
+                    <a class="btn btn-primary" th:href="@{/groups/{id}(id=${group.id})}">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Groups You Belong To -->
+    <h2 class="mt-4">Группы в которых вы участвуете</h2>
+    <div class="row" th:if="${user.groupsMember == null or #lists.isEmpty(user.groupsMember)}">
+        <p>Вы не участвуете ни в одной группе.</p>
+    </div>
+    <div class="row" th:unless="${user.groupsMember == null or #lists.isEmpty(user.groupsMember)}">
+        <div th:each="group : ${user.groupsMember}" class="col-md-4">
+            <div class="card group-card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${group.name}"></h5>
+                    <p class="card-text" th:text="${group.title}"></p>
+                    <a class="btn btn-primary" th:href="@{/groups/{id}(id=${group.id})}">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Existing Groups -->
+    <h2 class="mt-4">All Existing Groups</h2>
+    <div class="row">
+        <div th:each="group : ${allGroups}" class="col-md-4">
+            <div class="card group-card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${group.name}"></h5>
+                    <p class="card-text" th:text="${group.title}"></p>
+                    <a class="btn btn-primary" th:href="@{/groups/{id}(id=${group.id})}">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button to Create New Group -->
+    <div class="d-flex justify-content-center mt-4">
+        <a class="btn btn-primary" href="/groups/new">Create New Group</a>
+    </div>
+</div>
+<!-- Кнопка для перехода на главную страницу -->
+<a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

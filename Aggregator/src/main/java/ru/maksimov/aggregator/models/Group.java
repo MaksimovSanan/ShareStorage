@@ -1,4 +1,4 @@
-package ru.maksimov.webclient.models;
+package ru.maksimov.aggregator.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +16,7 @@ public class Group {
     private String title;
     private User owner;
     private List<User> members;
-    private List<RequestForMembership> requests;
-
+    private List<RequestDTO> requests;
     private byte[] avatar;
 
     @Override

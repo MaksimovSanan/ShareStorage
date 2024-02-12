@@ -58,7 +58,10 @@
                 <span th:if="${item.status != 1}">Доступно</span>
             </td>
             <td><a th:href="@{'/user/' + ${item.ownerId}}" th:text="${item.ownerName}"></a></td>
-            <td th:text="${item.groupId} == null ? 'Public' : ${item.groupName}"></td>
+            <td>
+                <a th:if="${item.groupId != null}" th:href="@{'/groups/' + ${item.groupId}}" th:text="${item.groupName}"></a>
+                <span th:if="${item.groupId == null}">Public</span>
+            </td>
         </tr>
         </tbody>
     </table>
