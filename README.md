@@ -81,6 +81,10 @@ RESTApp/
 
 ![ItemsService](misc/images/ItemsService.png)
 
+## ItemsService
+
+![ItemsService](misc/images/ImageServer.png)
+
 ## Schema DB
 
 ![SchemaDB](misc/images/SchemaDB.png)
