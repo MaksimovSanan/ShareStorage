@@ -22,10 +22,8 @@ public class NewRentContractDTO {
     @NotNull(message = "Borrower name cannot be empty")
     private String borrowerName;
 
-    @NotNull(message = "Field reservedFrom cannot be empty")
     private LocalDateTime reservedFrom;
 
-    @NotNull(message = "Field reservedTo cannot be empty")
     private LocalDateTime reservedTo;
 
     private String comment;

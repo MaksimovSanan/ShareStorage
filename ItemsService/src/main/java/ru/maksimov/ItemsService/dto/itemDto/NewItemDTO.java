@@ -2,13 +2,11 @@ package ru.maksimov.ItemsService.dto.itemDto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class NewItemDTO {
     @NotNull(message = "Owner ID should not be empty")
     private Integer ownerId;
@@ -22,7 +20,6 @@ public class NewItemDTO {
     @NotEmpty(message = "Description of item cannot be empty")
     private String description;
 
-    private Integer costPerHour;
-
-    private Integer costPerDay;
+    private Integer groupId;
+    private String groupName;
 }

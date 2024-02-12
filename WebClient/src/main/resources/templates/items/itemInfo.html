@@ -32,6 +32,11 @@
             margin-top: 20px;
         }
 
+        .group-info {
+            margin-top: 20px;
+
+        }
+
         .owner-info p {
             margin-bottom: 5px;
         }
@@ -70,10 +75,21 @@
                         <a th:href="@{'/item/' + ${itemInfo.item.id} + '/rent'}" class="btn btn-success">Rent Item</a>
                     </div>
                 </div>
-                <div class="ml-auto owner-info">
-                    <p><strong>Owner:</strong> <span th:text="${itemInfo.item.ownerName}"></span></p>
-                    <a th:href="@{'/user/' + ${itemInfo.item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
+
+
+                <div class="ml-auto owner-group-info d-flex flex-column">
+                    <div class="owner-info">
+                        <p><strong>Owner:</strong> <span th:text="${itemInfo.item.ownerName}"></span></p>
+                        <a th:href="@{'/user/' + ${itemInfo.item.ownerId}}" class="btn btn-primary">View Owner Profile</a>
+                    </div>
+
+                    <div class="group-info">
+                        <p><strong>Group:</strong> <span th:text="${itemInfo.item.groupName == null ? 'Public' : itemInfo.item.groupName}"></span></p>
+                        <!-- Переход на страницу группы -->
+                        <a th:if="${itemInfo.item.groupId != null}" th:href="@{'/groups/' + ${itemInfo.item.groupId}}" class="btn btn-primary">View Group Page</a>
+                    </div>
                 </div>
+
 
             </div>
 

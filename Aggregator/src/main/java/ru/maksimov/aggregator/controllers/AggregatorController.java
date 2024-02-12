@@ -23,8 +23,8 @@ public class AggregatorController {
         this.aggregatorService = aggregatorService;
     }
 
-    @GetMapping("/user-info")
-    public ResponseEntity<UserInfo> getUserInfo(@RequestParam(name = "userId") int userId,
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserInfo> getUserInfo(@PathVariable("id") int userId,
                                                 @RequestParam(name = "visitorId") int visitorId) {
 
         UserInfo userInfo = aggregatorService.getUserInfo(userId, visitorId);
@@ -43,5 +43,16 @@ public class AggregatorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(itemInfo);
+    }
+
+    @GetMapping("group/{id}")
+    public ResponseEntity<GroupInfo> getGroupInfo(@PathVariable("id") int groupId,
+                                                @RequestParam(name = "visitorId") int visitorId) {
+
+        GroupInfo gRoupInfo = aggregatorService.getGroupInfo(groupId, visitorId);
+        if(gRoupInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(gRoupInfo);
     }
 }

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Info</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .members-items-info {
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .go-home-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    .avatar-container {
+      position: relative;
+      width: 300px; /* Ширина блока */
+      height: 300px; /* Высота блока */
+      overflow: hidden; /* Обрезаем контент, выходящий за границы блока */
+      margin-bottom: 20px; /* Отступ снизу блока */
+      margin: 20px;
+    }
+    .avatar-img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; /* Чтобы изображение полностью заполняло родительский контейнер */
+      height: auto;
+    }
+    .card {
+      background-color: #f0f0f0; /* Цвет фона блока */
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .container {
+      margin-top: 50px; /* Выберите желаемый отступ */
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+<!--  <h1>Group Information</h1>-->
+
+
+<!--  &lt;!&ndash; Аватар пользователя &ndash;&gt;-->
+<!--  <div class="avatar-container">-->
+<!--    <img th:if="${base64Avatar != null}" th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar" class="avatar-img">-->
+<!--    <i th:unless="${base64Avatar != null}" class="fas fa-user-circle fa-5x"></i>-->
+<!--  </div>-->
+
+  <!-- Group Details -->
+  <div class="card">
+    <div class="row">
+      <!-- Фотография сообщества -->
+      <div class="col-md avatar-container">
+        <img th:if="${base64Avatar != null}" th:src="'data:image/png;base64,' + ${base64Avatar}" alt="Avatar" class="avatar-img">
+        <i th:unless="${base64Avatar != null}" class="fas fa-user-circle fa-5x"></i>
+      </div>
+      <!-- Информация о группе -->
+      <div class="col-md">
+        <div class="card-header">
+          <h2 th:text="${group.name}"></h2>
+          <p class="card-text">Owner: <a th:href="'/user/' + ${group.owner.id}" th:text="${group.owner.login}"></a></p>
+        </div>
+        <div class="card-body">
+          <h5>О группе:</h5>
+          <p class="card-text" th:text="${group.title}"></p>
+          <!-- Display other group information here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="container mt-3">
+    <div class="row">
+      <!-- Первый блок с пользователями -->
+      <div class="col-md-6 members-items-info">
+        <h2>Участники</h2>
+        <ul class="list-group">
+          <li th:each="member : ${group.members}" class="list-group-item">
+            <a th:href="'/user/' + ${member.id}" th:text="${member.login}"></a>
+          </li>
+          <li th:if="${#lists.isEmpty(group.members)}" class="list-group-item">No members found.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <!-- Второй блок с предметами пользователей -->
+      <div class="col-md-6 members-items-info">
+        <h2>Объявления</h2>
+        <ul class="list-group">
+          <li th:each="item : ${items}" class="list-group-item">
+            <a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a>
+            <span th:if="${item.status == 0}" class="badge badge-success">Available</span>
+            <span th:if="${item.status == 1}" class="badge badge-danger">Rented</span>
+          </li>
+          <li th:if="${#lists.isEmpty(items)}" class="list-group-item">No items found.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Membership Requests (For Owner Only) -->
+  <div th:if="${role == 'owner'}">
+    <div class="card mt-3">
+      <div class="card-header">
+        Membership Requests
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" th:each="request : ${group.requests}">
+          <p>User: <span th:text="${request.userId}"></span></p>
+          <p>Message: <span th:text="${request.message}"></span></p>
+          <div class="btn-group" role="group" aria-label="Request Actions">
+            <form th:action="@{'/groups/' + ${group.id} + '/acceptRequest/' + ${request.id}}" method="post">
+              <button type="submit" class="btn btn-success btn-sm">Accept</button>
+            </form>
+            <form th:action="@{'/groups/' + ${group.id} + '/rejectRequest/' + ${request.id}}" method="post">
+              <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Request Membership (For Guests) -->
+  <div th:if="${role == 'guest'}">
+    <form th:action="@{'/groups/' + ${group.id} + '/sendRequest'}" method="post">
+      <div class="form-group">
+        <label for="message">Заявка на вступление:</label>
+        <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Отправить заявку</button>
+    </form>
+  </div>
+
+  <!-- Request Membership (For Guests with Request Already Sent) -->
+  <div th:if="${role == 'guestWithRequest'}">
+    <div class="alert alert-info" role="alert">
+      Заявка на вступление уже отправлена и будет рассмотрена владельцем группы.
+    </div>
+  </div>
+
+  <!-- User's Role in Group -->
+  <div th:if="${role == 'owner'}">
+    <!-- Display buttons for managing group (Edit, Delete, etc.) -->
+    <a th:if="${role == 'owner'}" th:href="@{'/groups/' + ${group.id} + '/edit'}" class="btn btn-primary mt-3 mr-2">Edit Group</a>
+    <a href="#" class="btn btn-danger mt-3">Delete Group</a>
+  </div>
+</div>
+<!-- Кнопка для перехода на главную страницу -->
+<a href="/" class="btn btn-light go-home-btn"><i class="fas fa-home"></i></a>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

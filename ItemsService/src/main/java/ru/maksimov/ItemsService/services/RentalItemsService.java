@@ -45,6 +45,10 @@ public class RentalItemsService {
         return rentalItemsRepository.findByStatus(status);
     }
 
+    public List<RentalItem> findByGroupId(Integer groupId) {
+        return rentalItemsRepository.findByGroupId(groupId);
+    }
+
     @Transactional
     public void save(RentalItem rentalItem) {
         enrichRentalItem(rentalItem);

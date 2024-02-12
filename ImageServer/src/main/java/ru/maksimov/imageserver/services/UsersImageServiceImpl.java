@@ -47,7 +47,7 @@ public class UsersImageServiceImpl implements UsersImageService{
         else {
             UserImage newUserImage = new UserImage();
             newUserImage.setUserId(userId);
-            newUserImage.setUserImagePath(filePath);
+            newUserImage.setUserImagePath(fileName);
             usersImageRepository.save(newUserImage);
         }
 

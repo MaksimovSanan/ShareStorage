@@ -55,23 +55,13 @@ public class ItemsController {
         }
 
         List<String> base64Picture = new ArrayList<>();
-        try {
-            ResponseEntity<List<byte[]>> response = restTemplate.exchange(
-                    "http://IMAGESERVER/item-image/" + id,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<byte[]>>() {});
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<byte[]> pictures = response.getBody();
-                for (byte[] picture : pictures) {
-                    base64Picture.add(Base64.getEncoder().encodeToString(picture));
-                }
-            } else {
-                base64Picture = null;
+        if(itemInfo.getItem().getPictures() == null) {
+            base64Picture = null;
+        }
+        else {
+            for (byte[] picture : itemInfo.getItem().getPictures()) {
+                base64Picture.add(Base64.getEncoder().encodeToString(picture));
             }
-        } catch (Exception e) {
-            System.out.println(e);
         }
 
         model.addAttribute("base64Picture", base64Picture);
@@ -95,7 +85,11 @@ public class ItemsController {
     }
 
     @GetMapping("/new")
-    public String newItemPage(@ModelAttribute("item") Item item) {
+    public String newItemPage(@ModelAttribute("item") Item item,
+                              Model model,
+                              Principal principal) {
+        User visitor = principalHelper.getUser(principal);
+        model.addAttribute("groups", visitor.getGroupsMember());
         return "items/newItemPage";
     }
 
@@ -106,7 +100,6 @@ public class ItemsController {
 
         newItem.setOwnerId(user.getId());
         newItem.setOwnerName(user.getLogin());
-        newItem.setId(null);
 
         String addItemUrl = "http://ITEMSSERVICE/items";
 
@@ -115,7 +108,7 @@ public class ItemsController {
         HttpEntity<Item> requestEntity = new HttpEntity<>(newItem, headers);
         ResponseEntity<Void> responseEntity = restTemplate.postForEntity(addItemUrl, requestEntity, Void.class);
 
-        return "redirect:/"; // Перенаправляем пользователя на главную страницу
+        return "redirect:/";
     }
 
     @PatchMapping("/{id}")

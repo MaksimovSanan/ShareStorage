@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Создание базы данных "authorized_users"
-psql -U sanan -c "CREATE DATABASE authorized_users;"
+psql -U postgres -c "CREATE DATABASE authorized_users;"
 
 # Выполнение SQL-скрипта
-psql -U sanan -d authorized_users -c "
+psql -U postgres -d authorized_users -c "
     DROP TABLE IF EXISTS users_roles CASCADE;
     DROP TABLE IF EXISTS users CASCADE;
     DROP TABLE IF EXISTS roles CASCADE;
@@ -50,12 +50,15 @@ psql -U sanan -d authorized_users -c "
 "
 
 # Создание базы данных "items_service_db"
-psql -U sanan -c "CREATE DATABASE users_service_db;"
+psql -U postgres -c "CREATE DATABASE users_service_db;"
 
 
 # Выполнение SQL-скрипта
-psql -U sanan -d users_service_db -c "
+psql -U postgres -d users_service_db -c "
     DROP TABLE IF EXISTS users CASCADE;
+    DROP TABLE IF EXISTS groups CASCADE;
+    DROP TABLE IF EXISTS groups_users CASCADE;
+    DROP TABLE IF EXISTS requests_for_membership CASCADE;
 
     CREATE TABLE IF NOT EXISTS users(
     user_id SERIAL PRIMARY KEY,
@@ -72,15 +75,44 @@ psql -U sanan -d users_service_db -c "
         ('Casper', 'gazeta@gmail.com', '77777777777', 'Vsem piece!', CURRENT_TIMESTAMP),
         ('yshkin@yandex.ru', 'yshkin@yandex.ru', NULL, 'Я КСТА Тоже JAVA DEVELOPER. tg:@N0vaT', CURRENT_TIMESTAMP);
 
+    CREATE TABLE IF NOT EXISTS groups (
+      group_id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      title VARCHAR(255),
+      owner_id INTEGER REFERENCES users(user_id) NOT NULL
+    );
 
+    INSERT INTO groups (name, title, owner_id)
+    VALUES
+        ('Школьники21', 'АНО ПУКОН Школа 21. https://21-school.ru', 1),
+        ('Озерная 9', 'юберцы Озерная 9 ГЭНГ',1);
+
+
+    CREATE TABLE IF NOT EXISTS groups_users(
+      user_id INTEGER REFERENCES users(user_id) NOT NULL,
+      group_id INTEGER REFERENCES groups(group_id) NOT NULL
+    );
+
+    INSERT INTO groups_users (user_id, group_id)
+    VALUES
+        (1, 1),
+        (3, 1),
+        (1, 2);
+
+    CREATE TABLE IF NOT EXISTS requests_for_membership(
+      request_id SERIAL PRIMARY KEY,
+      group_id INTEGER REFERENCES groups(group_id) NOT NULL,
+      user_id INTEGER REFERENCES users(user_id) NOT NULL,
+      message VARCHAR(255)
+    );
 "
 
 
 # Создание базы данных "items_service_db"
-psql -U sanan -c "CREATE DATABASE items_service_db;"
+psql -U postgres -c "CREATE DATABASE items_service_db;"
 
 # Выполнение SQL-скрипта
-psql -U sanan -d items_service_db -c "
+psql -U postgres -d items_service_db -c "
     DROP TABLE IF EXISTS rental_items CASCADE;
 
     CREATE TABLE IF NOT EXISTS rental_items(
@@ -90,16 +122,26 @@ psql -U sanan -d items_service_db -c "
         title VARCHAR(100) NOT NULL,
         description VARCHAR(250) NOT NULL,
         status INTEGER NOT NULL,
-        cost_hour INTEGER,
-        cost_day INTEGER
+        group_id INTEGER,
+        group_name VARCHAR(100)
         );
 
-    INSERT INTO rental_items (owner_id, owner_name, title, description, status, cost_hour, cost_day)
+    INSERT INTO rental_items (owner_id, owner_name, title, description, status)
     VALUES
-        (1, 'SANAN', 'Корм для птиц', 'Однажды я нашел на остановке корм для птиц. Он пролежал у меня дома месяца 3, после чего его пришлось выкинуть, потому что не смог найти кому из моих знакомых он нужен', 0, 0, 0),
-        (1, 'SANAN', 'Табуретки ikea', 'Еще у меня на балконе лежат 2 ненужные табуретки(на самом деле не только они)', 0, 0, 0),
-        (2, 'gazeta@gmail.com', 'Газета', 'Взял газету в метро у бабушки. Могу отдать', 0, 0, 0),
-        (3, 'yshkin@yandex.ru', 'Усилитель слуха', 'Прибор рабочий, сам опробовал, 10 из 10', 0, 0, 0);
+        (1, 'SANAN', 'Корм для птиц', 'Однажды я нашел на остановке корм для птиц. Он пролежал у меня дома месяца 3, после чего его пришлось выкинуть, потому что не смог найти кому из моих знакомых он нужен', 0);
+
+    INSERT INTO rental_items(owner_id, owner_name, title, description, status, group_id, group_name)
+        VALUES
+        (1, 'SANAN', 'Табуретки ikea', 'Еще у меня на балконе лежат 2 ненужные табуретки(на самом деле не только они)', 0, 2, 'Озерная 9');
+
+    INSERT INTO rental_items (owner_id, owner_name, title, description, status)
+        VALUES
+        (2, 'gazeta@gmail.com', 'Газета', 'Взял газету в метро у бабушки. Могу отдать', 0),
+        (3, 'yshkin@yandex.ru', 'Усилитель слуха', 'Прибор рабочий, сам опробовал, 10 из 10', 0);
+
+    INSERT INTO rental_items(owner_id, owner_name, title, description, status, group_id, group_name)
+    VALUES
+        (3, 'yshkin@yandex.ru', 'Помощь с ДЖАВОЙ', 'Могу помочь с ДЖАВОЙ. Я СЕКЬЮРИТИ МАСТЕР', 0, 1, 'Школьники21');
 
 
     DROP TABLE IF EXISTS rent_contracts CASCADE;
@@ -124,10 +166,10 @@ psql -U sanan -d items_service_db -c "
 "
 
 
-psql -U sanan -c "CREATE DATABASE image_server_db;"
+psql -U postgres -c "CREATE DATABASE image_server_db;"
 
 # Выполнение SQL-скрипта
-psql -U sanan -d image_server_db -c "
+psql -U postgres -d image_server_db -c "
     DROP TABLE IF EXISTS users_image CASCADE;
 
     CREATE TABLE IF NOT EXISTS users_image(
@@ -154,8 +196,18 @@ psql -U sanan -d image_server_db -c "
     INSERT INTO items_image (item_id, item_image_path)
     VALUES
         (2, 'item_2_picForShareStorage2.jpeg'),
-        (3, 'item_3_picForStaheStorageVlad.jpeg'),
+        (3, 'item_3_picForShareStorageVlad.jpeg'),
         (4, 'item_4_picForShareStorage4.jpeg'),
         (1, 'item_1_picForShareStorage1.jpeg');
 
+    CREATE TABLE IF NOT EXISTS groups_image(
+            group_image_id INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+            group_id INTEGER NOT NULL,
+            group_image_path VARCHAR(255)
+            );
+
+    INSERT INTO groups_image (group_id, group_image_path)
+    VALUES
+        (1, 'group_1_picForShareStorageSchool21Group.jpeg'),
+        (2, 'group_2_picForShareStorageOzernaya.jpeg');
 "

@@ -9,9 +9,8 @@ import java.util.List;
 @Repository
 public interface RentalItemsRepository extends JpaRepository<RentalItem, Integer> {
     List<RentalItem> findByOwnerId(Integer ownerId);
-
     List<RentalItem> findByOwnerIdAndStatus(Integer ownerId, Integer status);
-
     List<RentalItem> findByStatus(Integer status);
+    List<RentalItem> findByGroupId(Integer groupId);
 }
 

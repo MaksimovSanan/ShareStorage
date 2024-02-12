@@ -75,16 +75,34 @@
             <p th:text="${userInfo.user.introduce}" class="lead"></p>
         </div>
     </div>
-    <div class="user-items">
-        <h3>Items:</h3>
-        <ul>
-            <li th:each="item : ${userInfo.userItems}">
-                <a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a>
-                <span th:if="${item.status == 0}" class="text-success">Available</span>
-                <span th:if="${item.status == 1}" class="text-danger">Rented</span>
-            </li>
-        </ul>
+
+    <div class="row mt-3">
+        <!-- Блок с предметами пользователя -->
+        <div class="col-md-6 contracts-info">
+            <h2>Items</h2>
+            <ul class="list-group">
+                <li th:each="item : ${userInfo.userItems}" class="list-group-item">
+                    <a th:href="@{'/item/' + ${item.id}}" th:text="${item.title}"></a>
+                    <span th:if="${item.status == 0}" class="badge badge-success">Available</span>
+                    <span th:if="${item.status == 1}" class="badge badge-danger">Rented</span>
+                </li>
+                <li th:if="${#lists.isEmpty(userInfo.userItems)}" class="list-group-item">No items found.</li>
+            </ul>
+        </div>
+
+        <!-- Блок с группами пользователя -->
+        <div class="col-md-6 contracts-info">
+            <h2>Groups</h2>
+            <ul class="list-group">
+                <li th:each="group : ${userInfo.user.GroupsMember}" class="list-group-item">
+                    <a th:href="@{'/groups/' + ${group.id}}" th:text="${group.name}"></a>
+                </li>
+                <li th:if="${#lists.isEmpty(userInfo.user.GroupsMember)}" class="list-group-item">No groups found.</li>
+            </ul>
+        </div>
     </div>
+
+
     <div class="row">
         <div class="col-md-6 contracts-info">
             <h2>Sharing History</h2>

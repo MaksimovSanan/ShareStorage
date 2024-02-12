@@ -29,9 +29,11 @@ public class RentContract {
 
 
     public void convertDateToString() {
-        this.reservedFromDateFromForm = reservedFrom.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.reservedFromTimeFromForm = reservedFrom.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-        this.reservedToDateFromForm = reservedTo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        this.reservedToTimeFromForm = reservedTo.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        if(reservedFrom != null && reservedTo != null) {
+            this.reservedFromDateFromForm = reservedFrom.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            this.reservedFromTimeFromForm = reservedFrom.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            this.reservedToDateFromForm = reservedTo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            this.reservedToTimeFromForm = reservedTo.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        }
     }
 }

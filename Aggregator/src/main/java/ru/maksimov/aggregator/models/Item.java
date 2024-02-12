@@ -2,6 +2,8 @@ package ru.maksimov.aggregator.models;
 
 import lombok.*;
 
+import java.util.List;
+
 
 @Data
 @Getter
@@ -21,8 +23,10 @@ public class Item {
 
     private Integer status;
 
-    private Integer costPerHour;
+    private Integer groupId;
 
-    private Integer costPerDay;
+    private String groupName;
+
+    private List<byte[]> pictures;
 
 }
