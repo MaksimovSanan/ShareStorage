@@ -1,7 +1,8 @@
 
-# Spring Cloud Rent Service RESTfull
+# ShareStorage
 ## Микросервисное приложение Spring Boot с PostgreSQL в контейнерах Docker
 
+### Приложение в котором пользователи могут регистрироваться, объединяться в группы и публиковать свои вещи которые готовы безвозмездно отдать другим
 Этот проект демонстрирует настройку приложения Spring Boot с использованием Spring Cloud, двумя микросервисами
 с собственными базами данных PostgreSQL,
 каждое из которых работает в отдельных контейнерах Docker.
@@ -63,6 +64,12 @@ RESTApp/
 │       ├── Dockerfile.ItemsServicePostgreSQL
 │       └── init.sql
 │
+├── ImageServer/
+│   └── src/
+│       └── main/
+│           ├── java/
+│           └── resources/
+│
 └── docker-compose.yml
 ```
 
@@ -71,6 +78,7 @@ RESTApp/
 - `UsersService/UsersServicePostgreSQL/`: Содержит файлы инициализации базы данных PostgreSQL для UsersService.
 - `ItemsService/`: Микросервис инкапсулирующий в себе логику работы с товарами.
 - `ItemsService/ItemsServicePostgreSQL/`: Содержит файлы инициализации базы данных PostgreSQL для ItemsService.
+- `ImageServer/`: Микросервис отвечающий за хранение и работу с изображениями пользователей, вещей, групп.
 - `docker-compose.yml`: Файл конфигурации Docker Compose для оркестрации развертывания обоих контейнеров.
 
 ## UsersService
@@ -96,8 +104,6 @@ RESTApp/
 С добавление Spring security у меня возникли проблемы с организацией всего проекта в докере.
 Работаю над запуском с помощью docker-compose.
 Пока запустить получится только на локалке.
-Для этого придется создать таблицы postgres самостоятельно и задать переменные в application.properties в модулях security-server, itemsservice, usersservice.
-После чего последовательно запустить eurekaserver, itemsservice, usersservice, aggregator, security-server, webclient.
 # :(
 
 ### P.S.S:
