@@ -44,7 +44,9 @@ public class UsersImageController {
     @GetMapping("/{userId}")
     public ResponseEntity<byte[]> getUserImage(@PathVariable Integer userId) {
 
-        String pathToUsersImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/users/";
+        System.out.println(Paths.get("").toAbsolutePath().toString());
+//        String pathToUsersImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/users/";
+        String pathToUsersImageDir = "/resources/static/users/";
         UserImage userImage = usersImageService.getUserImage(userId);
 
         File file = new File(pathToUsersImageDir + userImage.getUserImagePath());

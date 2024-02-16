@@ -1,5 +1,5 @@
-version: '3.1'
 
+version: '3.1'
 services:
   eureka-server:
     build:
@@ -21,6 +21,39 @@ services:
     networks:
       - my_network
 
+
+  items_service_postgresql:
+    build:
+      context: ItemsService/ItemsServicePostgreSQL
+      dockerfile: Dockerfile.ItemsServicePostgreSQL
+    container_name: items_service_postgresql_container
+    ports:
+      - "5433:5432"
+    networks:
+      - my_network
+
+  image_server_postgresql:
+    build:
+      context: ImageServer/ImageServerPostgreSQL
+      dockerfile: Dockerfile.ImageServerPostgreSQL
+    container_name: image_server_postgresql_container
+    ports:
+      - "5434:5432"
+    networks:
+      - my_network
+
+
+  authorization_server_postgresql:
+    build:
+      context: authorization-server/AuthorizationServicePostgreSQL
+      dockerfile: Dockerfile.AuthorizationServerPostgreSQL
+    container_name: authorization_server_db
+    ports:
+      - "5435:5432"
+    networks:
+      - my_network
+
+
   users_service:
     build:
       context: UsersService
@@ -34,16 +67,6 @@ services:
       - my_network
 
 
-  items_service_postgresql:
-    build:
-      context: ItemsService/ItemsServicePostgreSQL
-      dockerfile: Dockerfile.ItemsServicePostgreSQL
-    container_name: items_service_postgresql_container
-    ports:
-      - "5433:5432"  # Используйте 5433:5432, чтобы экспортировать порт 5432 контейнера
-    networks:
-      - my_network
-
   items_service:
       build:
         context: ItemsService
@@ -56,37 +79,56 @@ services:
       networks:
         - my_network
 
+  image_server:
+    build:
+      context: ImageServer
+      dockerfile: Dockerfile.ImageServer
+    container_name: image_server_container
+    #      ports:
+    #        - "8096:8096"
+    links:
+      - eureka-server
+    networks:
+      - my_network
+
+  aggregator:
+    build:
+      context: Aggregator
+      dockerfile: Dockerfile.Aggregator
+    container_name: aggregator_container
+    #      ports:
+    #        - "8096:8096"
+    links:
+      - eureka-server
+    networks:
+      - my_network
+
+
   web_client:
     build:
-      context: WebClient
-      dockerfile: Dockerfile.WebClient
+      context: .
+      dockerfile: docker/Dockerfile.WebClient
     container_name: web_client
+    ports:
+      - "8081:8081"
+      - "9000:9000"
     links:
       - eureka-server
     networks:
       - my_network
 
-  api_gateway:
-    build:
-      context: APIGateway
-      dockerfile: Dockerfile.APIGateway
-    container_name: api_gateway
-    ports:
-      - "8080:8080"
-    links:
-      - eureka-server
-    networks:
-      - my_network
-
-  authorization-server:
-    build:
-      context: authorization-server/AuthorizationServicePostgreSQL
-      dockerfile: Dockerfile.AuthorizationServerPostgreSQL
-    container_name: authorization_server_db
-    ports:
-      - "5434:5432"  # Используйте 5434:5432, чтобы экспортировать порт 5432 контейнера
-    networks:
-      - my_network
+#  api_gateway:
+#    build:
+#      context: APIGateway
+#      dockerfile: Dockerfile.APIGateway
+#    container_name: api_gateway
+#    ports:
+#      - "8080:8080"
+#    links:
+#      - eureka-server
+#    networks:
+#      - my_network
+#
 
 networks:
   my_network:

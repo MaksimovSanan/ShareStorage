@@ -1,0 +1,23 @@
+# Используйте базовый образ с Java
+FROM openjdk:17
+
+# Копируйте оба JAR-файла в контейнер
+COPY ../authorization-server/target/authorization-server-1.0-SNAPSHOT.jar /authorization-server.jar
+COPY ../WebClient/target/WebClient-0.0.1-SNAPSHOT.jar /web-client.jar
+
+# Откройте порт, на котором ваше приложение работает (если это необходимо)
+EXPOSE 8081
+EXPOSE 9000
+
+# Запустите оба приложения при старте контейнера
+CMD java -jar /authorization-server.jar && \
+    echo "Waiting for authorization server to become available..." && \
+    sleep 60 && \
+    echo "Authorization server is available. Starting WebClient." && \
+    java -jar /web-client.jar
+
+
+# until $(curl --output /dev/null --silent --head --fail http://localhost:9000); do \
+#          printf '.'; \
+#          sleep 1; \
+#      done && \

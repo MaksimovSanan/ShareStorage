@@ -91,7 +91,7 @@ RESTApp/
 
 ## ItemsService
 
-![ItemsService](misc/images/ImageServer.png)
+![ImageServer](misc/images/ImageServer.png)
 
 ## Schema DB
 
@@ -100,7 +100,7 @@ RESTApp/
 
 ## Начало работы
 
-### P.S. Problem(in progress)
+### P.S. Problem(FIXED!!! Пропускайте этот шаг, запуск через Docker compose)
 С добавление Spring security у меня возникли проблемы с организацией всего проекта в докере.
 Работаю над запуском с помощью docker-compose.
 Пока запустить получится только на локалке.
@@ -126,12 +126,11 @@ RESTApp/
 4. Дождитесь развертывания приложения в контейнерах
 
 5. Доступ к приложению: http://localhost:8081/
-
-   Users:
-
-   smak_simov@mail.ru:password
-   yshkin@yandex.ru:password
-   gazeta@gmail.com:qwerty0123   
+   <br>
+   Users:<br>
+   smak_simov@mail.ru:password <br>
+   yshkin@yandex.ru:password <br>
+   gazeta@gmail.com:qwerty0123 <br>
 
 6. Остановка работы приложения:
    ```bash
@@ -144,7 +143,7 @@ RESTApp/
    ```
 
 
-Следуйте этим шагам для запуска проекта:
+## Следуйте этим шагам для запуска проекта:
 
 1. Клонируйте репозиторий:
 
@@ -155,7 +154,7 @@ RESTApp/
 
 2. Соберите jar файлы каждого микросервиса
    ```bash
-   mvnw install
+   sh build-scripts/build-modules.sh
    ```
 
 3. Соберите и запустите Docker-контейнеры:
@@ -166,7 +165,12 @@ RESTApp/
 
 4. Дождитесь развертывания приложения в контейнерах
 
-5. Доступ к приложению: http://localhost:8080
+5. Доступ к приложению: http://localhost:8081
+   <br>
+   Users:<br>
+   smak_simov@mail.ru:password <br>
+   yshkin@yandex.ru:password <br>
+   gazeta@gmail.com:qwerty0123 <br>
 
 ## Настройка
 

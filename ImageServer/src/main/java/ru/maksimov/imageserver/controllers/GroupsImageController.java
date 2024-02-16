@@ -41,7 +41,8 @@ public class GroupsImageController {
     @GetMapping("/{groupId}")
     public ResponseEntity<byte[]> getGroupImage(@PathVariable Integer groupId) {
 
-        String pathToGroupImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/groups/";
+//        String pathToGroupImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/groups/";
+        String pathToGroupImageDir = "/resources/static/groups/";
         GroupImage groupImage = groupsImageService.getGroupImage(groupId);
 
         File file = new File(pathToGroupImageDir + groupImage.getGroupImagePath());

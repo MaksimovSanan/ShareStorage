@@ -31,7 +31,8 @@ public class ItemsImageController {
 
     @GetMapping("/{itemId}")
     public ResponseEntity<List<byte[]>> getUserImage(@PathVariable Integer itemId) {
-        String pathToItemsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/items/";
+//        String pathToItemsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/items/";
+        String pathToItemsImageDir = "/resources/static/items/";
         List<ItemImage> itemImages = itemsImageService.getItemImages(itemId);
         List<byte[]> images = new ArrayList<>();
         for(ItemImage itemImage: itemImages) {

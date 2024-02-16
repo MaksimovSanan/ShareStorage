@@ -109,13 +109,11 @@ public class GroupsController {
                 usersService.update(user.getId(), user);
                 requestsService.deleteRequest(request);
                 return ResponseEntity.ok(modelMapper.map(request, RequestDTO.class));
-            }
-            else {
+            } else {
                 // need to change
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
