@@ -123,9 +123,11 @@
             <form th:action="@{'/groups/' + ${group.id} + '/acceptRequest/' + ${request.id}}" method="post">
               <button type="submit" class="btn btn-success btn-sm">Accept</button>
             </form>
-            <form th:action="@{'/groups/' + ${group.id} + '/rejectRequest/' + ${request.id}}" method="post">
-              <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-            </form>
+
+<!--            need to implement-->
+<!--            <form th:action="@{'/groups/' + ${group.id} + '/rejectRequest/' + ${request.id}}" method="post">-->
+<!--              <button type="submit" class="btn btn-danger btn-sm">Reject</button>-->
+<!--            </form>-->
           </div>
         </li>
       </ul>

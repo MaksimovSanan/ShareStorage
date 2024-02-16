@@ -25,7 +25,8 @@ public class ItemsImageServiceImpl implements ItemsImageService{
 
     @Override
     public void saveItemImage(Integer itemId, MultipartFile newItemFile) throws IOException {
-        String pathToItemsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/items/";
+//        String pathToItemsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/items/";
+        String pathToItemsImageDir = "/resources/static/items/";
 
         String fileName = "item_" + itemId + "_" + newItemFile.getOriginalFilename();
         String filePath = pathToItemsImageDir + fileName;

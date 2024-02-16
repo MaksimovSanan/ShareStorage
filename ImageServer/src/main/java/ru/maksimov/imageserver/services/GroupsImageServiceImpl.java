@@ -29,7 +29,8 @@ public class GroupsImageServiceImpl implements GroupsImageService{
 
     @Override
     public void saveGroupImage(Integer groupId, MultipartFile newGroupFile) throws IOException {
-        String pathToGroupsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/groups/";
+//        String pathToGroupsImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/groups/";
+        String pathToGroupsImageDir = "/resources/static/groups/";
 
         String fileName = "group_" + groupId + "_" + newGroupFile.getOriginalFilename();
         String filePath = pathToGroupsImageDir + fileName;

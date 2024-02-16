@@ -26,8 +26,8 @@ public class UsersImageServiceImpl implements UsersImageService{
     @Override
     public void saveUserImage(Integer userId, MultipartFile newUserFile) throws IOException {
 
-        String pathToUsersImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/users/";
-
+//        String pathToUsersImageDir = Paths.get("").toAbsolutePath().toString() + "/ImageServer/src/main/resources/static/users/";
+        String pathToUsersImageDir = "/resources/static/users/";
         String fileName = "user_" + userId + "_" + newUserFile.getOriginalFilename();
         String filePath = pathToUsersImageDir + fileName;
 
